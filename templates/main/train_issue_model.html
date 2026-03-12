@@ -1,0 +1,80 @@
+{% extends "layout/main_layout.html" %}
+
+{% block title %}Train AI Model{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white px-8 py-10 shadow-[0_25px_70px_-35px_rgba(15,23,42,0.5)]">
+    <div class="absolute inset-0">
+        <div class="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-indigo-200/50 blur-[80px]"></div>
+        <div class="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-cyan-200/50 blur-[90px]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_55%)]"></div>
+    </div>
+
+    <div class="relative z-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-600">AI Training</p>
+            <h1 class="mt-4 text-4xl font-black text-slate-900 sm:text-5xl">Train Issue Model</h1>
+            <p class="mt-4 max-w-xl text-sm text-slate-600">
+                Trigger model training for issue classification. Results will be available in the AI Review queue.
+            </p>
+
+            <form method="post" action="{% url 'main:train_issue_ml_model' %}" class="mt-8 space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Target Field</label>
+                        <select name="target"
+                                class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                            <option value="Category">Category</option>
+                            <option value="Urgency">Urgency</option>
+                            <option value="Status">Status</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Min Samples</label>
+                        <input name="min_samples" type="number" min="10" value="30"
+                               class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                    </div>
+                </div>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:-translate-y-0.5">
+                    <span class="material-symbols-rounded text-base">memory</span>
+                    Start Training
+                </button>
+            </form>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-[0_15px_40px_-30px_rgba(15,23,42,0.4)] backdrop-blur">
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Latest Training Result</p>
+            {% if training_metadata %}
+                <div class="mt-4 space-y-3 text-sm text-slate-700">
+                    <div class="rounded-2xl bg-slate-900 px-4 py-4 text-white">
+                        <p class="text-xs uppercase tracking-wider text-cyan-200">Target</p>
+                        <p class="text-lg font-bold">{{ training_metadata.target }}</p>
+                        <p class="mt-1 text-xs text-slate-200">Trained at: {{ training_metadata.trained_at }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <p class="text-xs text-slate-500">Accuracy</p>
+                            <p class="text-lg font-bold text-emerald-600">{{ training_metadata.accuracy }}</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <p class="text-xs text-slate-500">F1 Weighted</p>
+                            <p class="text-lg font-bold text-indigo-600">{{ training_metadata.f1_weighted }}</p>
+                        </div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <p class="text-xs text-slate-500">Samples Used</p>
+                        <p class="text-base font-semibold text-slate-800">
+                            {{ training_metadata.samples_used }} of {{ training_metadata.samples_total }}
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                    No training metadata found yet. Run a training job to generate results.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

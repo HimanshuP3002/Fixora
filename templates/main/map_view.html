@@ -1,0 +1,92 @@
+{% extends "layout/main_layout.html" %}
+{% load static %}
+
+{% block title %}Live Issue Map{% endblock %}
+
+{% block content %}
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+    .map-wrapper {
+        height: calc(100vh - 4.5rem);
+    }
+
+    .pulse-marker {
+        width: 14px;
+        height: 14px;
+        background: #22d3ee;
+        border-radius: 50%;
+        position: relative;
+        animation: pulse 2s infinite;
+    }
+
+    .pulse-marker::after {
+        content: "";
+        position: absolute;
+        inset: -10px;
+        background: rgba(34,211,238,0.3);
+        border-radius: 50%;
+        animation: ring 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.9); }
+        70% { transform: scale(1); }
+        100% { transform: scale(0.9); }
+    }
+
+    @keyframes ring {
+        0% { transform: scale(0.2); opacity: 1; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+</style>
+
+<div class="map-wrapper relative bg-slate-900">
+
+    <!-- MAP -->
+    <div id="map" class="absolute inset-0 z-0"></div>
+
+    <!-- LEFT PANEL -->
+    <div class="absolute top-6 left-6 z-20 w-72 rounded-2xl
+                bg-white/20 backdrop-blur-xl border border-white/30
+                shadow-2xl p-5 text-white">
+        <h2 class="text-sm font-bold uppercase tracking-wide text-cyan-200 mb-4">
+            Live Filters
+        </h2>
+
+        <select class="w-full mb-3 rounded-xl bg-white/80 text-slate-800 p-2">
+            <option>All Categories</option>
+            <option>Road</option>
+            <option>Water</option>
+            <option>Electricity</option>
+        </select>
+
+        <select class="w-full mb-3 rounded-xl bg-white/80 text-slate-800 p-2">
+            <option>All Priority</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+        </select>
+
+        <button class="w-full rounded-xl bg-cyan-500 py-2 font-bold">
+            Apply Filters
+        </button>
+    </div>
+
+    <!-- USER CARD -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20
+                w-[90%] md:w-96 rounded-2xl bg-black/50 backdrop-blur-xl
+                border border-white/20 shadow-xl p-4 text-white text-center">
+        <h3 class="font-semibold">Your Location</h3>
+        <p class="text-sm mt-1">
+            Lat: <span id="lat">--</span> | Lng: <span id="lng">--</span>
+        </p>
+    </div>
+
+</div>
+
+
+{% endblock %}
+

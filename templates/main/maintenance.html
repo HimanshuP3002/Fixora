@@ -1,0 +1,24 @@
+{% extends "layout/main_layout.html" %}
+
+{% block title %}Maintenance{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white px-8 py-12 shadow-[0_25px_70px_-35px_rgba(15,23,42,0.5)]">
+    <div class="absolute inset-0">
+        <div class="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-rose-200/50 blur-[90px]"></div>
+        <div class="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-amber-200/50 blur-[90px]"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(239,68,68,0.12),transparent_55%)]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-2xl">
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-rose-600">Maintenance Mode</p>
+        <h1 class="mt-4 text-4xl font-black text-slate-900 sm:text-5xl">We’ll be right back</h1>
+        <p class="mt-4 text-sm text-slate-600">
+            The platform is undergoing scheduled maintenance. Please try again later.
+        </p>
+        <div class="mt-6 rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm text-rose-700">
+            Contact: {{ system_settings.general.contact_email|default:"support@fixora.local" }}
+        </div>
+    </div>
+</section>
+{% endblock %}

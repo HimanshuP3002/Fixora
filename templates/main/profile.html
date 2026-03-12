@@ -1,0 +1,181 @@
+{% extends "layout/main_layout.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block content %}
+<section class="relative min-h-screen overflow-hidden bg-slate-950 text-white px-6 py-12">
+  <!-- ambient background -->
+  <div class="pointer-events-none absolute inset-0">
+    <div class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-indigo-600/20 blur-3xl animate-float-slow"></div>
+    <div class="absolute top-40 -left-20 h-80 w-80 rounded-full bg-fuchsia-600/20 blur-3xl animate-float-medium"></div>
+    <div class="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl animate-float-fast"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(16,185,129,0.10),transparent_60%)]"></div>
+    <div class="absolute inset-0 opacity-[0.06] mix-blend-soft-light bg-[linear-gradient(0deg,transparent_0,transparent_2px,rgba(255,255,255,0.15)_2px,rgba(255,255,255,0.15)_3px)] bg-[length:100%_6px]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-6xl space-y-8">
+
+    {% if page_msg %}
+      <div class="rounded-2xl border border-emerald-900/60 bg-emerald-950/50 px-5 py-3 text-emerald-100">
+        {{ page_msg }}
+      </div>
+    {% endif %}
+
+    {% if err %}
+      <div class="rounded-2xl border border-rose-900/60 bg-rose-950/50 px-5 py-3 text-rose-100">
+        {{ err }}
+      </div>
+    {% endif %}
+
+    <!-- PROFILE HERO -->
+    <div class="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/70 shadow-2xl backdrop-blur-xl animate-rise">
+      <div class="h-40 bg-gradient-to-r from-indigo-600 via-fuchsia-500 to-emerald-400">
+        <div class="h-full w-full bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_35%)]"></div>
+      </div>
+
+      <div class="relative px-8 pb-8 -mt-14 flex flex-col md:flex-row items-center gap-6">
+        <!-- Avatar -->
+        <div class="h-28 w-28 rounded-full border-4 border-slate-900 bg-slate-800 shadow-xl overflow-hidden flex items-center justify-center ring-2 ring-indigo-400/30 animate-pulse-soft">
+          {% if user_details.Avatar %}
+            <img src="{{ user_details.Avatar }}" class="h-full w-full object-cover" />
+          {% else %}
+            <span class="text-4xl font-bold">
+              {{ user_details.Full_Name|default:user_details.UserName|slice:":1" }}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Identity -->
+        <div class="text-center md:text-left">
+          <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
+            {{ user_details.Full_Name|default:user_details.UserName }}
+          </h1>
+          <p class="text-slate-300 mt-1">{{ user_details.EmailID }}</p>
+          <span class="inline-block mt-3 px-3 py-1 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-200 border border-indigo-400/20">
+            {{ user_details.UserRole|default:"Simple User" }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENTO GRID -->
+    <div class="grid gap-6 md:grid-cols-12">
+
+      <!-- STAT: Issues -->
+      <div class="md:col-span-4 rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-lg transition transform hover:scale-[1.03] hover:shadow-xl animate-rise-delayed">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Issues Reported</p>
+        <p class="text-4xl font-extrabold mt-3">{{ issues_count }}</p>
+        <p class="text-slate-400 text-sm mt-1">Civic contributions</p>
+      </div>
+
+      <!-- STAT: Rank -->
+      <div class="md:col-span-4 rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-lg transition transform hover:scale-[1.03] hover:shadow-xl animate-rise-delayed">
+        <p class="text-xs uppercase tracking-widest text-slate-400">User Type</p>
+        <p class="text-3xl font-bold mt-3">
+          {{ user_details.UserRole|default:"Simple User" }}
+        </p>
+        <p class="text-slate-400 text-sm mt-1">Community role</p>
+      </div>
+
+      <!-- STAT: Joined -->
+      <div class="md:col-span-4 rounded-2xl bg-slate-900/80 border border-slate-800 p-6 shadow-lg transition transform hover:scale-[1.03] hover:shadow-xl animate-rise-delayed">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Joined</p>
+        <p class="text-3xl font-bold mt-3">
+          {{ user_details.Created_At|date:"M Y" }}
+        </p>
+        <p class="text-slate-400 text-sm mt-1">Member since</p>
+      </div>
+
+      <!-- STATUS -->
+      <div class="md:col-span-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-800 p-6 shadow-lg transition transform hover:scale-[1.03] hover:shadow-xl animate-rise-delayed">
+        <p class="text-xs uppercase tracking-widest text-slate-400">Account Status</p>
+        <p class="text-2xl font-semibold mt-3">
+          {{ user_details.Status|default:"Activated" }}
+        </p>
+        <p class="text-slate-400 text-sm mt-2">
+          Keep reporting. Real change starts with visibility.
+        </p>
+      </div>
+
+    </div>
+
+    <div id="edit-profile" class="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl animate-rise">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-indigo-300">Profile Action</p>
+          <h2 class="mt-2 text-2xl font-bold">Edit Profile</h2>
+          <p class="mt-1 text-sm text-slate-400">Update your display name in the account records.</p>
+        </div>
+      </div>
+
+      <form method="post" action="{% url 'main:profile' %}" class="mt-6 grid gap-4 md:grid-cols-2">
+        {% csrf_token %}
+        <div class="md:col-span-2">
+          <label class="text-xs uppercase tracking-widest text-slate-400">Full Name</label>
+          <input
+            type="text"
+            name="full_name"
+            value="{{ user_details.Full_Name|default:user_details.UserName }}"
+            required
+            class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
+          />
+        </div>
+        <div class="md:col-span-2 flex items-center gap-3">
+          <button
+            type="submit"
+            class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white text-sm font-semibold transition hover:scale-[1.02]"
+          >
+            Save Changes
+          </button>
+          <a
+            href="{% url 'main:profile' %}"
+            class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 text-white text-sm font-semibold transition hover:bg-slate-700"
+          >
+            Reset
+          </a>
+        </div>
+      </form>
+
+      <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-indigo-300">Role Access</p>
+        <p class="mt-1 text-sm text-slate-400">Available functionality for your current role.</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {% for item in role_feature_links %}
+            <a
+              href="{{ item.url }}"
+              class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-indigo-500 hover:text-white"
+            >
+              {{ item.label }}
+            </a>
+          {% empty %}
+            <p class="text-sm text-slate-500">No role actions available.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING ACTION BAR -->
+  <div class="fixed bottom-6 right-6 z-40 flex gap-3 rounded-2xl bg-slate-900/90 border border-slate-800 px-5 py-3 backdrop-blur-xl shadow-2xl animate-float-medium">
+    <a href="#edit-profile"
+       class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white text-sm font-semibold hover:scale-105 transition shadow-lg shadow-fuchsia-500/20">
+      Edit Profile
+    </a>
+  </div>
+</section>
+
+<style>
+  @keyframes float-slow { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
+  @keyframes float-medium { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+  @keyframes float-fast { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+  @keyframes rise { 0% { opacity: 0; transform: translateY(14px) } 100% { opacity: 1; transform: translateY(0) } }
+  @keyframes pulse-soft { 0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.35) } 50% { box-shadow: 0 0 0 10px rgba(99,102,241,0) } }
+  .animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
+  .animate-float-medium { animation: float-medium 7s ease-in-out infinite; }
+  .animate-float-fast { animation: float-fast 5s ease-in-out infinite; }
+  .animate-rise { animation: rise 600ms ease-out both; }
+  .animate-rise-delayed { animation: rise 700ms ease-out both; animation-delay: 120ms; }
+  .animate-pulse-soft { animation: pulse-soft 2.6s ease-in-out infinite; }
+</style>
+{% endblock %}

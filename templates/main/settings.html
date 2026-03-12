@@ -1,0 +1,462 @@
+{% extends "layout/main_layout.html" %}
+
+{% block title %}System Settings{% endblock %}
+
+{% block content %}
+{{ settings_data|json_script:"initial-system-settings" }}
+
+<div x-data="systemSettingsPage()" x-init="init()" class="relative">
+    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-br from-sky-100 via-indigo-100 to-cyan-100 blur-2xl"></div>
+
+    <div class="mb-6 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-lg shadow-slate-200/50 backdrop-blur">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">System Settings</h1>
+        <p class="mt-2 text-sm text-slate-500">Configure platform behavior</p>
+    </div>
+
+    <div x-show="alert.message" x-transition class="mb-4 rounded-2xl border px-4 py-3 text-sm"
+        :class="alert.type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'">
+        <div class="flex items-center justify-between gap-3">
+            <p x-text="alert.message"></p>
+            <button @click="alert.message=''" class="rounded-md px-2 py-1 text-xs font-semibold hover:bg-black/5">Close</button>
+        </div>
+    </div>
+
+    <div class="mb-5 flex flex-wrap gap-2">
+        <template x-for="item in tabs" :key="item.id">
+            <button @click="activeTab = item.id"
+                class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+                :class="activeTab === item.id ? 'bg-indigo-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'">
+                <span x-text="item.label"></span>
+            </button>
+        </template>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <section class="xl:col-span-2 space-y-6">
+            <div x-show="activeTab === 'general'" x-transition
+                class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900">General Settings</h2>
+                <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <label class="space-y-1">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Platform Name</span>
+                        <input type="text" x-model="form.general.platform_name"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                    </label>
+                    <label class="space-y-1">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Contact Email</span>
+                        <input type="email" x-model="form.general.contact_email"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                    </label>
+                    <label class="space-y-1 md:col-span-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">System Logo</span>
+                        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                                <div class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                                    <template x-if="logoPreview">
+                                        <img :src="logoPreview" alt="System logo preview" class="h-full w-full object-contain">
+                                    </template>
+                                    <template x-if="!logoPreview">
+                                        <span class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">No Logo</span>
+                                    </template>
+                                </div>
+                                <div class="flex-1 space-y-3">
+                                    <input type="file" accept="image/*" @change="handleLogoUpload($event)"
+                                        class="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-500">
+                                    <input type="text" x-model="form.general.system_logo" placeholder="/media/system_settings/logo.png"
+                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                                    <p class="text-xs text-slate-500">Upload a logo image or paste an existing media URL. Recommended: transparent PNG or SVG.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="mt-1 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 md:col-span-2">
+                        <span class="text-sm font-semibold text-slate-700">Maintenance Mode</span>
+                        <button type="button" @click="form.general.maintenance_mode = !form.general.maintenance_mode"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.general.maintenance_mode ? 'bg-amber-500' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.general.maintenance_mode ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'user_management'" x-transition
+                class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900">User Management Settings</h2>
+                <div class="mt-5 space-y-4">
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Allow Public Registration</span>
+                        <button type="button" @click="form.user_management.allow_public_registration = !form.user_management.allow_public_registration"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.user_management.allow_public_registration ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.user_management.allow_public_registration ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Authority Approval Required</span>
+                        <button type="button" @click="form.user_management.authority_approval_required = !form.user_management.authority_approval_required"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.user_management.authority_approval_required ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.user_management.authority_approval_required ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                    <label class="space-y-1">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Default User Role</span>
+                        <select x-model="form.user_management.default_user_role"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                            <option value="Simple User">Simple User</option>
+                            <option value="Authority">Authority</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'ai_system'" x-transition
+                class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900">AI System Settings</h2>
+                <div class="mt-5 space-y-5">
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Auto-classification</span>
+                        <button type="button" @click="form.ai_system.auto_classification = !form.ai_system.auto_classification"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.ai_system.auto_classification ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.ai_system.auto_classification ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                    <label class="block rounded-xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <div class="mb-2 flex items-center justify-between">
+                            <span class="text-sm font-semibold text-slate-700">Confidence Threshold</span>
+                            <span class="rounded-lg bg-indigo-100 px-2 py-1 text-xs font-bold text-indigo-700"
+                                x-text="Number(form.ai_system.confidence_threshold).toFixed(2)"></span>
+                        </div>
+                        <input type="range" min="0" max="1" step="0.01" x-model="form.ai_system.confidence_threshold" class="w-full accent-indigo-600">
+                    </label>
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Enable AI Training Queue</span>
+                        <button type="button" @click="form.ai_system.enable_ai_training_queue = !form.ai_system.enable_ai_training_queue"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.ai_system.enable_ai_training_queue ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.ai_system.enable_ai_training_queue ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'notifications'" x-transition
+                class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900">Notification Settings</h2>
+                <div class="mt-5 space-y-4">
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Email Alerts</span>
+                        <button type="button" @click="form.notifications.email_alerts = !form.notifications.email_alerts"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.notifications.email_alerts ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.notifications.email_alerts ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                    <label class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-semibold text-slate-700">Push Notifications</span>
+                        <button type="button" @click="form.notifications.push_notifications = !form.notifications.push_notifications"
+                            class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                            :class="form.notifications.push_notifications ? 'bg-indigo-600' : 'bg-slate-300'">
+                            <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                :class="form.notifications.push_notifications ? 'translate-x-6' : 'translate-x-1'"></span>
+                        </button>
+                    </label>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'festival'" x-transition
+                class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Festival Theme Settings</h2>
+                        <p class="mt-1 text-xs text-slate-500">Festival calendar controls and eclipse controls are separated for clarity.</p>
+                    </div>
+                    <div class="inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold"
+                        :class="form.festival.auto_mode ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-indigo-200 bg-indigo-50 text-indigo-700'">
+                        <span class="h-2 w-2 rounded-full" :class="form.festival.auto_mode ? 'bg-emerald-500' : 'bg-indigo-500'"></span>
+                        <span x-text="form.festival.auto_mode ? 'Auto Mode Enabled' : 'Manual Mode Enabled'"></span>
+                    </div>
+                </div>
+
+                <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    <section class="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-5 shadow-sm">
+                        <div class="mb-4 flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-amber-700">Festival Theme</p>
+                                <h3 class="mt-1 text-base font-bold text-slate-900">Calendar Festival Control</h3>
+                            </div>
+                            <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700">Festive</span>
+                        </div>
+
+                        <label class="mb-4 flex items-center justify-between rounded-xl border border-amber-200 bg-white/80 px-4 py-3">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-700">Auto Mode</span>
+                                <p class="mt-0.5 text-[11px] text-slate-500">Auto follows monthly calendar. Manual gives admin direct control.</p>
+                            </div>
+                            <button type="button" @click="form.festival.auto_mode = !form.festival.auto_mode"
+                                class="relative inline-flex h-7 w-12 items-center rounded-full transition"
+                                :class="form.festival.auto_mode ? 'bg-emerald-600' : 'bg-indigo-600'">
+                                <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                                    :class="form.festival.auto_mode ? 'translate-x-6' : 'translate-x-1'"></span>
+                            </button>
+                        </label>
+
+                        <label class="space-y-1">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Select Festival</span>
+                            <select x-model="form.festival.selected_festival"
+                                class="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100">
+                                <option value="">Select</option>
+                                <template x-for="name in festivalOptions" :key="name">
+                                    <option :value="name" x-text="name"></option>
+                                </template>
+                            </select>
+                        </label>
+
+                        <label class="mt-4 block space-y-1">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Festival Date Override</span>
+                            <input type="date" x-model="form.festival.override_date"
+                                class="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100">
+                        </label>
+
+                        <div class="mt-4 rounded-xl border border-amber-200 bg-white/80 px-3 py-2.5 text-xs text-slate-600">
+                            <span class="font-semibold text-slate-800">Current Selection:</span>
+                            <span x-text="form.festival.selected_festival || 'No festival selected'"></span>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-300 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 p-5 shadow-sm text-slate-100">
+                        <div class="mb-4 flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-cyan-300">Eclipse Theme</p>
+                                <h3 class="mt-1 text-base font-bold text-white">Eclipse Event Control</h3>
+                            </div>
+                            <span class="rounded-full bg-cyan-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-200">Astronomical</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <label class="space-y-1">
+                                <span class="text-xs font-semibold uppercase tracking-wide text-cyan-100/80">Eclipse Date</span>
+                                <input type="date" x-model="form.festival.eclipse_date"
+                                    class="w-full rounded-xl border border-slate-500 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-900/40">
+                            </label>
+                            <label class="space-y-1">
+                                <span class="text-xs font-semibold uppercase tracking-wide text-cyan-100/80">Eclipse Type</span>
+                                <select x-model="form.festival.eclipse_type"
+                                    class="w-full rounded-xl border border-slate-500 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-900/40">
+                                    <option>Chandra Grahan</option>
+                                    <option>Surya Grahan</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <label class="mt-4 space-y-1 block">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-cyan-100/80">Eclipse Time Window</span>
+                            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                <input type="datetime-local" x-model="form.festival.eclipse_start"
+                                    class="w-full rounded-xl border border-slate-500 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-900/40">
+                                <input type="datetime-local" x-model="form.festival.eclipse_end"
+                                    class="w-full rounded-xl border border-slate-500 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-900/40">
+                            </div>
+                        </label>
+
+                        <div class="mt-4 rounded-xl border border-cyan-400/20 bg-slate-900/40 px-3 py-2.5 text-xs text-cyan-100">
+                            <span class="font-semibold">Active Eclipse Type:</span>
+                            <span x-text="form.festival.eclipse_type || 'Not selected'"></span>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                    <span class="font-semibold text-slate-800">Rule:</span>
+                    Auto mode follows your calendar mapping. Manual mode forces selected festival from admin settings, with optional date limit.
+                </div>
+            </div>
+        </section>
+
+        <aside class="space-y-4">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">Actions</h3>
+                <div class="mt-4 space-y-3">
+                    <button @click="saveSettings()" :disabled="saving || loading"
+                        class="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0">
+                        Save Settings
+                    </button>
+                    <button @click="resetDefaults()" :disabled="saving || loading"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">
+                        Reset to Default
+                    </button>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">State</h3>
+                <div class="mt-3 space-y-2 text-xs text-slate-600">
+                    <p>Role Required: <span class="font-semibold text-slate-800">Super Admin</span></p>
+                    <p>Storage: <span class="font-semibold text-slate-800">JSON + DAO</span></p>
+                    <p>Cache: <span class="font-semibold text-slate-800">Redis Sync</span></p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div x-show="loading || saving" x-transition.opacity class="fixed inset-0 z-50 grid place-items-center bg-slate-900/35 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+            <div class="mb-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div class="h-full w-1/2 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500"></div>
+            </div>
+            <div class="space-y-2">
+                <div class="h-3 w-2/3 animate-pulse rounded bg-slate-100"></div>
+                <div class="h-3 w-1/2 animate-pulse rounded bg-slate-100"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function systemSettingsPage() {
+        return {
+            loading: false,
+            saving: false,
+            activeTab: "general",
+            tabs: [
+                { id: "general", label: "General" },
+                { id: "user_management", label: "User Management" },
+                { id: "ai_system", label: "AI System" },
+                { id: "notifications", label: "Notifications" },
+                { id: "festival", label: "Festival Theme" },
+            ],
+            festivalOptions: [
+                "Makar Sankranti",
+                "Vasant Panchami",
+                "Republic Day",
+                "Maha Shivaratri",
+                "Losar",
+                "Holi",
+                "Eid-ul-Fitr",
+                "Ugadi / Gudi Padwa / Chaitra Navratri (Start)",
+                "Ram Navami",
+                "Mahavir Jayanti",
+                "Good Friday",
+                "Easter",
+                "Baisakhi / Rongali Bihu",
+                "Buddha Purnima",
+                "Thrissur Pooram",
+                "Rath Yatra",
+                "Hemis Festival",
+                "Dree Festival",
+                "Independence Day",
+                "Raksha Bandhan",
+                "Janmashtami",
+                "Onam (Thiruvonam)",
+                "Ganesh Chaturthi",
+                "Sharad Navratri (Start)",
+                "Durga Puja (Ashtami)",
+                "Dussehra (Vijayadashami)",
+                "Diwali",
+                "Govardhan Puja / Chhath Puja",
+                "Gurpurab (Guru Nanak Jayanti)",
+                "Hornbill Festival (Start)",
+                "Christmas",
+                "Eclipse Night",
+            ],
+            alert: { type: "success", message: "" },
+            selectedLogoFile: null,
+            logoPreview: "",
+            form: {
+                general: { platform_name: "", contact_email: "", system_logo: "", maintenance_mode: false },
+                user_management: { allow_public_registration: true, authority_approval_required: true, default_user_role: "Simple User" },
+                ai_system: { auto_classification: true, confidence_threshold: 0.75, enable_ai_training_queue: true },
+                notifications: { email_alerts: true, push_notifications: true },
+                festival: { auto_mode: true, selected_festival: "", override_date: "", eclipse_date: "", eclipse_type: "Chandra Grahan", eclipse_start: "", eclipse_end: "" },
+            },
+            init() {
+                const initial = JSON.parse(document.getElementById("initial-system-settings").textContent || "{}");
+                this.form = this.mergeDefaults(initial);
+                this.logoPreview = this.form.general.system_logo || "";
+            },
+            mergeDefaults(input) {
+                const base = {
+                    general: { platform_name: "Fixora", contact_email: "support@fixora.local", system_logo: "", maintenance_mode: false },
+                    user_management: { allow_public_registration: true, authority_approval_required: true, default_user_role: "Simple User" },
+                    ai_system: { auto_classification: true, confidence_threshold: 0.75, enable_ai_training_queue: true },
+                    notifications: { email_alerts: true, push_notifications: true },
+                    festival: { auto_mode: true, selected_festival: "", override_date: "", eclipse_date: "", eclipse_type: "Chandra Grahan", eclipse_start: "", eclipse_end: "" },
+                };
+                return {
+                    general: { ...base.general, ...(input.general || {}) },
+                    user_management: { ...base.user_management, ...(input.user_management || {}) },
+                    ai_system: { ...base.ai_system, ...(input.ai_system || {}) },
+                    notifications: { ...base.notifications, ...(input.notifications || {}) },
+                    festival: { ...base.festival, ...(input.festival || {}) },
+                };
+            },
+            handleLogoUpload(event) {
+                const [file] = event.target.files || [];
+                this.selectedLogoFile = file || null;
+                if (!file) {
+                    this.logoPreview = this.form.general.system_logo || "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.logoPreview = reader.result;
+                };
+                reader.readAsDataURL(file);
+            },
+            async saveSettings() {
+                this.saving = true;
+                this.alert.message = "";
+                try {
+                    const formData = new FormData();
+                    formData.append("payload", JSON.stringify(this.form));
+                    if (this.selectedLogoFile) {
+                        formData.append("system_logo_file", this.selectedLogoFile);
+                    }
+                    const res = await fetch("{% url 'main:settings_update_api' %}", {
+                        method: "POST",
+                        body: formData,
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.err || "Failed to update settings.");
+                    this.form = this.mergeDefaults(data.settings || this.form);
+                    this.logoPreview = this.form.general.system_logo || this.logoPreview || "";
+                    this.selectedLogoFile = null;
+                    this.alert = { type: "success", message: data.msg || "Settings updated successfully." };
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                } catch (err) {
+                    this.alert = { type: "error", message: err.message || "Update failed." };
+                } finally {
+                    this.saving = false;
+                }
+            },
+            async resetDefaults() {
+                this.loading = true;
+                this.alert.message = "";
+                try {
+                    const res = await fetch("{% url 'main:settings_reset_api' %}", { method: "POST" });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.err || "Failed to reset settings.");
+                    this.form = this.mergeDefaults(data.settings || {});
+                    this.selectedLogoFile = null;
+                    this.logoPreview = this.form.general.system_logo || "";
+                    this.alert = { type: "success", message: "Settings reset to defaults." };
+                } catch (err) {
+                    this.alert = { type: "error", message: err.message || "Reset failed." };
+                } finally {
+                    this.loading = false;
+                }
+            },
+        };
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends 'layout/main_layout.html' %}
+{% block title %}Admin Registration{% endblock title %}
+
+{% block content %}
+<style>
+    @keyframes nebulaFloatA {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .55; }
+        50% { transform: translate3d(32px, -26px, 0) scale(1.08); opacity: .85; }
+    }
+    @keyframes nebulaFloatB {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .5; }
+        50% { transform: translate3d(-28px, 20px, 0) scale(1.07); opacity: .78; }
+    }
+    @keyframes orbitspin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @keyframes pulseRing {
+        0%, 100% { transform: scale(1); opacity: .35; }
+        50% { transform: scale(1.06); opacity: .8; }
+    }
+    @keyframes cardEnter {
+        from { opacity: 0; transform: translateY(26px) scale(0.985); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes runningBorder {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+    @keyframes slideShine {
+        100% { transform: translateX(135%); }
+    }
+    @keyframes listReveal {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-enter {
+        animation: cardEnter .75s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .reveal-item {
+        opacity: 0;
+        animation: listReveal .48s ease forwards;
+    }
+    .field:focus-within .field-icon {
+        color: rgb(165 180 252);
+        transform: scale(1.1);
+    }
+</style>
+
+<section class="relative min-h-[calc(100vh-11rem)] overflow-hidden rounded-[30px] border border-slate-800 bg-slate-950 px-4 py-8 sm:px-6">
+    <div class="pointer-events-none absolute inset-0">
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.08)_1px,transparent_1px)] bg-[size:34px_34px] opacity-25"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_12%_14%,rgba(99,102,241,0.35),transparent_34%),radial-gradient(circle_at_80%_22%,rgba(168,85,247,0.3),transparent_34%),radial-gradient(circle_at_55%_90%,rgba(14,165,233,0.16),transparent_32%)]"></div>
+        <div class="absolute -top-20 -left-16 h-80 w-80 rounded-full bg-indigo-700/30 blur-3xl" style="animation: nebulaFloatA 15s ease-in-out infinite;"></div>
+        <div class="absolute top-24 right-0 h-72 w-72 rounded-full bg-violet-600/25 blur-3xl" style="animation: nebulaFloatB 18s ease-in-out infinite;"></div>
+        <div class="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" style="animation: nebulaFloatA 13s ease-in-out infinite;"></div>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-6xl card-enter">
+        <div class="rounded-3xl p-[1px] [background:linear-gradient(115deg,rgba(129,140,248,0.8),rgba(15,23,42,0.15),rgba(217,70,239,0.6),rgba(56,189,248,0.65))] [background-size:200%_200%] shadow-[0_30px_90px_-30px_rgba(99,102,241,0.6)]" style="animation: runningBorder 3.8s linear infinite;">
+            <div class="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/65 backdrop-blur-2xl">
+                <div class="grid grid-cols-1 xl:grid-cols-5">
+                    <aside class="relative overflow-hidden rounded-t-3xl border-b border-white/10 p-6 xl:col-span-2 xl:rounded-l-3xl xl:rounded-tr-none xl:border-b-0 xl:border-r">
+                        <div class="absolute inset-0 bg-[linear-gradient(160deg,rgba(79,70,229,0.2),rgba(15,23,42,0.42)_55%,rgba(217,70,239,0.2))]"></div>
+                        <div class="relative">
+                            <p class="inline-flex items-center rounded-full border border-indigo-300/35 bg-indigo-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-200">Security Matrix</p>
+                            <h2 class="mt-4 text-2xl font-bold text-slate-100">Privilege Identity Node</h2>
+                            <p class="mt-2 text-sm text-slate-300">Provision elevated accounts in a controlled, auditable channel.</p>
+
+                            <div class="mt-8 flex items-center justify-center">
+                                <div class="relative h-56 w-56">
+                                    <div class="absolute inset-0 rounded-full border border-indigo-300/35" style="animation: pulseRing 2.8s ease-in-out infinite;"></div>
+                                    <div class="absolute inset-4 rounded-full border border-cyan-300/25"></div>
+                                    <div class="absolute inset-8 rounded-full border border-violet-300/25"></div>
+                                    <div class="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(129,140,248,0.48),transparent_22%,transparent_74%,rgba(56,189,248,0.34))]" style="animation: orbitspin 5.4s linear infinite;"></div>
+                                    <div class="absolute inset-11 rounded-full border border-white/15 bg-slate-900/70 backdrop-blur-sm"></div>
+                                    <div class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-300 shadow-[0_0_26px_rgba(129,140,248,0.95)]"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 space-y-3 text-sm">
+                                <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2 text-slate-200">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.95)]"></span>
+                                    Identity Engine: Online
+                                </div>
+                                <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950/45 px-3 py-2 text-slate-200">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-indigo-400 shadow-[0_0_12px_rgba(99,102,241,0.95)]"></span>
+                                    Privilege Matrix: Synced
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="p-6 sm:p-8 xl:col-span-3">
+                        <div class="mb-5">
+                            <h1 class="text-2xl font-bold text-slate-100">Admin Registration</h1>
+                            <p class="mt-1 text-sm text-slate-400">Create secure administrative credentials with role-level access control.</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            {% if msg %}
+                            <div class="rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{{ msg }}</div>
+                            {% endif %}
+                            {% if err %}
+                            <div class="rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{{ err }}</div>
+                            {% endif %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="rounded-xl border border-slate-500/40 bg-slate-700/20 px-4 py-3 text-sm text-slate-200">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <form method="POST" enctype="multipart/form-data" class="mt-6 space-y-5">
+                            {% csrf_token %}
+
+                            <div class="field group relative reveal-item" style="animation-delay:.04s;">
+                                <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-8.5 7.5h11A1.5 1.5 0 0 0 19 18V6a1.5 1.5 0 0 0-1.5-1.5h-11A1.5 1.5 0 0 0 5 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                                </span>
+                                <input id="admin_id" name="admin_id" type="text" value="{{ AdminID }}" readonly class="peer w-full rounded-xl border border-indigo-400/45 bg-slate-800/70 px-10 pb-2 pt-5 text-sm font-semibold tracking-wider text-indigo-200 outline-none" readonly />
+                                <label for="admin_id" class="pointer-events-none absolute left-10 top-3 text-xs text-indigo-300">Admin ID</label>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div class="field group relative reveal-item" style="animation-delay:.08s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.5v-1.2a3.8 3.8 0 0 0-3.8-3.8H6.8A3.8 3.8 0 0 0 3 18.3v1.2m15-6.7a3.2 3.2 0 1 0-6.4 0 3.2 3.2 0 0 0 6.4 0Zm-8.4-1.5a3.8 3.8 0 1 0-7.6 0 3.8 3.8 0 0 0 7.6 0Z" /></svg>
+                                    </span>
+                                    <input id="admin_full_name" name="admin_full_name" type="text" required placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="admin_full_name" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Full Name</label>
+                                </div>
+
+                                <div class="field group relative reveal-item" style="animation-delay:.12s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m-8.5 12.5h11A1.5 1.5 0 0 0 19 18V6a1.5 1.5 0 0 0-1.5-1.5h-11A1.5 1.5 0 0 0 5 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                                    </span>
+                                    <input id="admin_username" name="admin_username" type="text" required placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="admin_username" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Username</label>
+                                </div>
+
+                                <div class="field group relative reveal-item" style="animation-delay:.16s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 5 8-5M5.5 5.5h13A1.5 1.5 0 0 1 20 7v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17V7a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                                    </span>
+                                    <input id="admin_email" name="admin_email" type="email" required placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="admin_email" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Admin Email</label>
+                                </div>
+
+                                <div class="field group relative reveal-item" style="animation-delay:.2s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.8 5 7v5.1c0 3.7 2.4 6.2 7 8.1 4.6-1.9 7-4.4 7-8.1V7l-7-3.2Zm-2.2 8.3 1.7 1.7 2.9-2.9" /></svg>
+                                    </span>
+                                    <select id="admin_role" name="admin_role" required class="peer w-full appearance-none rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]">
+                                        <option value="" selected disabled></option>
+                                        <option value="Super Admin">Super Admin</option>
+                                        <option value="Moderator">Moderator</option>
+                                        <option value="Editor">Editor</option>
+                                    </select>
+                                    <label for="admin_role" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-focus:text-indigo-300">Role</label>
+                                </div>
+
+                                <div class="field group relative reveal-item" style="animation-delay:.24s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 10V7.8a4 4 0 0 0-8 0V10m-1.5 0h11A1.5 1.5 0 0 1 19 11.5v7A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-7A1.5 1.5 0 0 1 6.5 10Z" /></svg>
+                                    </span>
+                                    <input id="admin_password" name="admin_password" type="password" required minlength="8" pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$" title="Minimum 8 characters with uppercase, lowercase, number, and special character." placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 pr-12 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="admin_password" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Password</label>
+                                    <button type="button" data-toggle-password="admin_password" class="absolute right-3 top-3.5 text-slate-400 transition hover:text-indigo-300 focus:outline-none" aria-label="Toggle password visibility">
+                                        <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25A2.25 2.25 0 1 0 12 9.75a2.25 2.25 0 0 0 0 4.5Z" /></svg>
+                                        <svg data-eye-off xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3 3 18 18m-9-2.25c-6 0-9.75-6.75-9.75-6.75a17.6 17.6 0 0 1 4.22-4.95m3.28-1.5A9.73 9.73 0 0 1 12 5.25c6 0 9.75 6.75 9.75 6.75a17.33 17.33 0 0 1-2.98 3.98M14.39 14.39A2.25 2.25 0 0 1 9.61 9.61" /></svg>
+                                    </button>
+                                </div>
+
+                                <div class="field group relative reveal-item" style="animation-delay:.28s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m8.8 12 2 2 4.4-4.4M12 3.8 5 7v5.1c0 3.7 2.4 6.2 7 8.1 4.6-1.9 7-4.4 7-8.1V7l-7-3.2Z" /></svg>
+                                    </span>
+                                    <input id="admin_confirm_password" name="admin_confirm_password" type="password" required minlength="8" pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$" title="Use the same strong password format and match the password." placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 pr-12 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="admin_confirm_password" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Confirm Password</label>
+                                    <button type="button" data-toggle-password="admin_confirm_password" class="absolute right-3 top-3.5 text-slate-400 transition hover:text-indigo-300 focus:outline-none" aria-label="Toggle confirm password visibility">
+                                        <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25A2.25 2.25 0 1 0 12 9.75a2.25 2.25 0 0 0 0 4.5Z" /></svg>
+                                        <svg data-eye-off xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3 3 18 18m-9-2.25c-6 0-9.75-6.75-9.75-6.75a17.6 17.6 0 0 1 4.22-4.95m3.28-1.5A9.73 9.73 0 0 1 12 5.25c6 0 9.75 6.75 9.75 6.75a17.33 17.33 0 0 1-2.98 3.98M14.39 14.39A2.25 2.25 0 0 1 9.61 9.61" /></svg>
+                                    </button>
+                                </div>
+
+                                <div class="field group relative md:col-span-2 reveal-item" style="animation-delay:.32s;">
+                                    <span class="field-icon pointer-events-none absolute left-3 top-3.5 text-slate-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3h2m-6 6h10M6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 17.5 9h-11A1.5 1.5 0 0 0 5 10.5v8A1.5 1.5 0 0 0 6.5 20Z" /></svg>
+                                    </span>
+                                    <input id="security_token" name="security_token" type="text" required placeholder=" " class="peer w-full rounded-xl border border-slate-700 bg-slate-800/70 px-10 pb-2 pt-5 text-sm text-slate-100 outline-none transition focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.24)]" />
+                                    <label for="security_token" class="pointer-events-none absolute left-10 top-3 text-xs text-slate-400 transition peer-placeholder-shown:top-4.5 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-300">Security Token</label>
+                                </div>
+
+                                <div class="md:col-span-2 -mt-1 rounded-lg border border-indigo-500/20 bg-indigo-500/5 px-3 py-2 reveal-item" style="animation-delay:.36s;">
+                                    <p class="text-xs text-indigo-200">Password must be at least 8 characters with uppercase, lowercase, number, and special character.</p>
+                                    <p id="confirm_password_error" class="mt-1 hidden text-xs text-rose-300">Confirm password must exactly match password.</p>
+                                </div>
+                            </div>
+
+                            <div class="rounded-xl border border-slate-700 bg-slate-800/60 p-4 reveal-item" style="animation-delay:.4s;">
+                                <p class="text-sm font-semibold text-slate-200">Biometric Profile Upload</p>
+                                <label for="profile_picture" class="mt-3 block rounded-xl border border-dashed border-indigo-300/35 bg-gradient-to-b from-slate-900/70 to-slate-800/70 p-4 text-center text-xs text-indigo-200 transition hover:border-indigo-300 hover:bg-slate-800/80">Drop image or click to upload secure profile picture</label>
+                                <input id="profile_picture" name="profile_picture" type="file" accept="image/*" required class="mt-2 block w-full text-xs text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:font-semibold file:text-white hover:file:bg-indigo-500" />
+                            </div>
+
+                            <div class="rounded-xl border border-slate-700 bg-slate-800/55 p-4 reveal-item" style="animation-delay:.44s;">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-semibold text-slate-200">Password Strength</p>
+                                    <span id="password_strength_label" class="text-xs font-medium text-slate-400">Enter password</span>
+                                </div>
+                                <div class="mt-3 grid grid-cols-4 gap-2">
+                                    <div id="strength_bar_1" class="h-2 rounded-full bg-slate-600"></div>
+                                    <div id="strength_bar_2" class="h-2 rounded-full bg-slate-600"></div>
+                                    <div id="strength_bar_3" class="h-2 rounded-full bg-slate-600"></div>
+                                    <div id="strength_bar_4" class="h-2 rounded-full bg-slate-600"></div>
+                                </div>
+                                <p id="password_strength_hint" class="mt-2 text-xs text-slate-400">Use uppercase, lowercase, number, and special character.</p>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-end gap-3 pt-1 reveal-item" style="animation-delay:.48s;">
+                                <a href="{% url 'main:index' %}" class="rounded-lg border border-slate-700 bg-slate-800/70 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700">Cancel</a>
+                                <button type="submit" class="group relative overflow-hidden rounded-lg border border-indigo-300/55 bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/50 transition hover:scale-[1.02] hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/60">
+                                    <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cyan-200/40 to-transparent group-hover:[animation:slideShine_0.9s_ease]"></span>
+                                    <span class="relative">Create Admin Account</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+

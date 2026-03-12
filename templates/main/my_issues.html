@@ -1,0 +1,180 @@
+{% extends 'layout/main_layout.html' %}
+{% load static %}
+
+{% block title %}My Reported Issues{% endblock title %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
+
+    <!-- HEADER -->
+    <div
+        class="relative mb-8 p-8 rounded-3xl overflow-hidden border border-white/40 shadow-sm bg-white/40 backdrop-blur-sm animate-fade-in-down">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-20 animate-blob"></div>
+        <div
+            class="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000">
+        </div>
+
+        <div class="relative z-10">
+            <h1
+                class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-indigo-800 mb-2">
+                My Reported Issues
+            </h1>
+            <p class="text-slate-600 text-lg">
+                {{ issues|length }} active grievances currently being tracked
+            </p>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="sticky top-4 z-30 mb-8">
+        <div
+            class="flex flex-wrap gap-3 p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200 shadow-sm">
+
+            <select id="categoryFilter"
+                class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                <option value="all">All Categories</option>
+                <option value="road">Road</option>
+                <option value="garbage">Garbage</option>
+                <option value="water">Water</option>
+                <option value="electric">Electric</option>
+            </select>
+
+            <select id="priorityFilter"
+                class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                <option value="all">All Priorities</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+
+            <button onclick="resetFilters()"
+                class="ml-auto px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-bold text-slate-600 transition">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- ISSUES GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-grid">
+
+        {% for issue in issues %}
+        <div class="issue-card group bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
+            data-category="{{ issue.Category|lower }}" data-priority="{{ issue.Urgency }}">
+
+            <!-- IMAGE -->
+            <div class="relative h-48 overflow-hidden">
+                {% if issue.Image %}
+                <img src="{{ issue.Image }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                {% else %}
+                <div class="w-full h-full bg-slate-50 flex flex-col items-center justify-center text-slate-300">
+                    <span class="material-symbols-rounded text-5xl">image_not_supported</span>
+                </div>
+                {% endif %}
+
+                <div class="absolute top-4 left-4 flex gap-2">
+                    <span class="px-3 py-1 text-[10px] font-bold uppercase bg-white/90 rounded-lg">
+                        {{ issue.Category }}
+                    </span>
+                </div>
+
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 text-[10px] font-bold uppercase rounded-lg text-white
+                        {% if issue.Urgency == 'High' %} bg-rose-500
+                        {% elif issue.Urgency == 'Medium' %} bg-amber-500
+                        {% else %} bg-emerald-500 {% endif %}">
+                        {{ issue.Urgency }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="p-6 flex flex-col flex-grow">
+                <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-2">
+                    {{ issue.Title }}
+                </h3>
+
+                <p class="text-sm text-slate-500 flex items-start gap-2 mb-4">
+                    <span class="material-symbols-rounded text-base">location_on</span>
+                    {{ issue.Location }}
+                </p>
+
+                <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+
+                    <span class="text-xs font-bold uppercase
+                        {% if issue.Status == 'Resolved' %} text-emerald-600
+                        {% elif issue.Status == 'In Progress' %} text-indigo-600
+                        {% else %} text-amber-600 {% endif %}">
+                        {{ issue.Status }}
+                    </span>
+
+                    <a href="{% url 'main:issue_detail' issue_id=issue.IssueID %}"
+                        class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 hover:bg-indigo-600 hover:text-white text-xs font-bold uppercase transition">
+                        View
+                        <span class="material-symbols-rounded text-base">arrow_right_alt</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+
+        <!-- EMPTY STATE -->
+        <div
+            class="col-span-full py-20 text-center bg-white/50 backdrop-blur-sm rounded-3xl border border-dashed border-slate-300">
+            <span class="material-symbols-rounded text-6xl text-indigo-300 mb-4">checklist</span>
+            <h3 class="text-2xl font-bold text-slate-800">No Reports Found</h3>
+            <p class="text-slate-500 mt-2 mb-6">
+                You haven’t submitted any issues yet.
+            </p>
+            <a href="/report"
+                class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold hover:shadow-lg transition">
+                Register New Issue
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- ANIMATIONS -->
+<style>
+    .animate-fade-in-down {
+        animation: fadeInDown 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+
+    @keyframes blob {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(30px, -30px) scale(1.1);
+        }
+
+        100% {
+            transform: translate(0, 0) scale(1);
+        }
+    }
+</style>
+
+{% endblock %}

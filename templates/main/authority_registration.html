@@ -1,0 +1,246 @@
+{% extends 'layout/main_layout.html' %}
+{% block title %}Authority Access Request{% endblock title %}
+
+
+{% block content %}
+<style>
+    @keyframes floatA {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(28px, -24px, 0) scale(1.08); }
+    }
+    @keyframes floatB {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(-30px, 20px, 0) scale(1.06); }
+    }
+    @keyframes gridPulse {
+        0%, 100% { opacity: 0.22; }
+        50% { opacity: 0.35; }
+    }
+    @keyframes cardEnter {
+        from { opacity: 0; transform: translateY(22px) scale(0.985); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes shine {
+        from { transform: translateX(-130%); }
+        to { transform: translateX(130%); }
+    }
+    .enter-card {
+        animation: cardEnter .75s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .portal-input:focus + .input-focus,
+    .portal-select:focus + .input-focus {
+        opacity: 1;
+    }
+</style>
+
+<section class="relative min-h-[80vh] overflow-hidden rounded-[30px] border border-slate-700/60 bg-slate-950 p-4 sm:p-6 lg:p-8">
+    <!-- Animated background -->
+    <div class="pointer-events-none absolute inset-0">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(14,116,144,0.34),transparent_34%),radial-gradient(circle_at_90%_20%,rgba(15,23,42,0.4),transparent_38%),radial-gradient(circle_at_50%_95%,rgba(30,64,175,0.22),transparent_35%)]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.11)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.11)_1px,transparent_1px)] bg-[size:36px_36px]" style="animation:gridPulse 4.8s ease-in-out infinite;"></div>
+        <div class="absolute -left-20 -top-16 h-72 w-72 rounded-full bg-cyan-500/25 blur-3xl" style="animation:floatA 14s ease-in-out infinite;"></div>
+        <div class="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-blue-600/20 blur-3xl" style="animation:floatB 16s ease-in-out infinite;"></div>
+        <div class="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-400/20 blur-3xl" style="animation:floatA 12s ease-in-out infinite;"></div>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-5xl enter-card">
+        <div class="overflow-hidden rounded-3xl border border-slate-600/40 bg-white/[0.05] shadow-[0_30px_80px_-35px_rgba(8,47,73,0.9)] backdrop-blur-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-5">
+                <!-- Left identity panel -->
+                <aside class="relative border-b border-slate-600/30 p-6 sm:p-8 lg:col-span-2 lg:border-b-0 lg:border-r">
+                    <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/15 via-slate-900/10 to-transparent"></div>
+                    <div class="relative space-y-6">
+                        <div>
+                            <p class="inline-flex items-center rounded-full border border-cyan-300/45 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-100">
+                                Fixora Clearance
+                            </p>
+                            <h1 class="mt-4 text-2xl font-bold tracking-tight text-white">Authority Access Request</h1>
+                            <p class="mt-2 text-sm leading-relaxed text-slate-300">
+                                Controlled onboarding for verified government and departmental officers. Every request is audited before approval.
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl border border-slate-500/30 bg-slate-900/45 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300">Security Controls</p>
+                            <ul class="mt-3 space-y-2 text-sm text-slate-200">
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>Identity document verification</li>
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-cyan-300"></span>Department-level approval workflow</li>
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-400"></span>Credential activation after clearance</li>
+                            </ul>
+                        </div>
+
+                        <div class="hidden rounded-2xl border border-slate-500/30 bg-slate-900/45 p-4 sm:block">
+                            <p class="text-xs text-slate-400">Portal integrity monitored in real-time</p>
+                            <div class="mt-2 flex items-center gap-2 text-sm font-medium text-emerald-300">
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(74,222,128,0.9)]"></span>
+                                Secure session active
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Form panel -->
+                <div class="p-5 sm:p-8 lg:col-span-3">
+                    <header class="mb-6 border-b border-slate-600/30 pb-4">
+                        <h2 class="text-xl font-semibold text-white">Official Registration Form</h2>
+                        <p class="mt-1 text-sm text-slate-300">Please provide accurate information for identity and role verification.</p>
+                    </header>
+
+                    <form method="POST" action="{% url 'main:authority_register_request' %}" enctype="multipart/form-data" id="authority-request-form" class="space-y-4" novalidate autocomplete="off">
+                        {% csrf_token %}
+
+                        <!-- Full Name -->
+                        <div>
+                            <label for="full_name" class="mb-1.5 block text-sm font-medium text-slate-200">Full Name</label>
+                            <div class="relative">
+                                <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.5v-1.1a3.9 3.9 0 0 0-3.9-3.9H6.9A3.9 3.9 0 0 0 3 18.4v1.1m15-7a3.2 3.2 0 1 0-6.4 0 3.2 3.2 0 0 0 6.4 0z"/></svg>
+                                </span>
+                                <input id="full_name" name="full_name" type="text" required autocomplete="name" placeholder="e.g. Alex Morgan"
+                                    class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 focus:bg-slate-900 invalid:border-rose-400" />
+                                <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                            </div>
+                        </div>
+
+                        <!-- Department Name -->
+                        <div>
+                            <label for="department_name" class="mb-1.5 block text-sm font-medium text-slate-200">Department Name</label>
+                            <div class="relative">
+                                <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16M5.5 20V7.5h13V20M9 11h.01M12 11h.01M15 11h.01M9 14h.01M12 14h.01M15 14h.01"/></svg>
+                                </span>
+                                <input id="department_name" name="department_name" type="text" required placeholder="e.g. Public Works Department"
+                                    class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="official_email" class="mb-1.5 block text-sm font-medium text-slate-200">Official Email</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m4 7 8 5 8-5M5.5 5.5h13A1.5 1.5 0 0 1 20 7v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+                                    </span>
+                                    <input id="official_email" name="official_email" type="email" required autocomplete="email" placeholder="name@department.gov"
+                                        class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="employee_id" class="mb-1.5 block text-sm font-medium text-slate-200">Employee ID</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h8m-8 4h8m-8 4h5M6.5 4h11A1.5 1.5 0 0 1 19 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 18.5v-13A1.5 1.5 0 0 1 6.5 4z"/></svg>
+                                    </span>
+                                    <input id="employee_id" name="employee_id" type="text" required placeholder="e.g. AUTH-001-VSR"
+                                        class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="phone_number" class="mb-1.5 block text-sm font-medium text-slate-200">Phone Number</label>
+                                <div class="relative">
+                                    <input id="phone_number" type="tel" required placeholder="Enter phone number"
+                                        data-intl-phone="true" data-hidden-input="phone_number_full" autocomplete="off"
+                                        class="portal-input relative block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-3 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                    <input type="hidden" id="phone_number_full" name="phone_number_full" />
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="role" class="mb-1.5 block text-sm font-medium text-slate-200">Role</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.8 5 7v5.1c0 3.7 2.4 6.2 7 8.1 4.6-1.9 7-4.4 7-8.1V7l-7-3.2z"/></svg>
+                                    </span>
+                                    <select id="role" name="role" required class="portal-select relative z-10 block w-full appearance-none rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-300/70 invalid:border-rose-400">
+                                        <option value="" selected disabled>Select role</option>
+                                        <option value="Officer">Officer</option>
+                                        <option value="Supervisor">Supervisor</option>
+                                    </select>
+                                    <span class="pointer-events-none absolute right-3 top-3 text-slate-400">
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.2 7.2a.75.75 0 0 1 1.06.04L10 11.18l3.74-3.94a.75.75 0 0 1 1.08 1.04l-4.28 4.5a.75.75 0 0 1-1.08 0l-4.28-4.5a.75.75 0 0 1 .04-1.06z" clip-rule="evenodd"/></svg>
+                                    </span>
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Verification document upload -->
+                        <div>
+                            <label for="verification_document" class="mb-1.5 block text-sm font-medium text-slate-200">Verification Document</label>
+                            <label for="verification_document" class="group relative block cursor-pointer overflow-hidden rounded-xl border border-dashed border-slate-500/60 bg-slate-900/70 p-4 text-center transition duration-300 hover:border-cyan-300/70">
+                                <span class="pointer-events-none absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-cyan-300/15 to-transparent opacity-0 transition group-hover:opacity-100 group-hover:[animation:shine_1.1s_ease]"></span>
+                                <div class="relative mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-slate-400/50 bg-slate-800 text-cyan-200">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16.5 12 11l5 5.5M12 11v10M6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V7.5A1.5 1.5 0 0 0 17.5 6H14L12.6 4.4A1.5 1.5 0 0 0 11.5 4h-5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20z"/></svg>
+                                </div>
+                                <p class="relative text-sm font-medium text-slate-200">Upload signed authorization letter or official ID</p>
+                                <p class="relative mt-1 text-xs text-slate-400">PDF, JPG, PNG up to 10MB</p>
+                                <input id="verification_document" name="verification_document" type="file" required accept=".pdf,.jpg,.jpeg,.png" class="sr-only" />
+                            </label>
+                            <p id="file-name" class="mt-1.5 text-xs text-slate-400" aria-live="polite">No file selected</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="password" class="mb-1.5 block text-sm font-medium text-slate-200">Password</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 10V7.8a4 4 0 0 0-8 0V10m-1.5 0h11A1.5 1.5 0 0 1 19 11.5v7A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-7A1.5 1.5 0 0 1 6.5 10z"/></svg>
+                                    </span>
+                                    <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="confirm_password" class="mb-1.5 block text-sm font-medium text-slate-200">Confirm Password</label>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute left-3 top-2.5 text-slate-400">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16 10V7.8a4 4 0 0 0-8 0V10m-1.5 0h11A1.5 1.5 0 0 1 19 11.5v7A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-7A1.5 1.5 0 0 1 6.5 10z"/></svg>
+                                    </span>
+                                    <input id="confirm_password" name="confirm_password" type="password" required minlength="8" autocomplete="new-password" class="portal-input relative z-10 block w-full rounded-xl border border-slate-500/45 bg-slate-900/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 invalid:border-rose-400" />
+                                    <span class="input-focus pointer-events-none absolute inset-0 rounded-xl ring-4 ring-cyan-300/20 opacity-0 transition duration-200"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="rounded-xl border border-slate-500/40 bg-slate-900/70 px-3.5 py-3">
+                            <label for="terms" class="flex cursor-pointer items-start gap-3">
+                                <input id="terms" name="terms" type="checkbox" required class="mt-0.5 h-4 w-4 rounded border-slate-400 bg-slate-900 text-cyan-500 focus:ring-2 focus:ring-cyan-200/40" />
+                                <span class="text-sm text-slate-300">
+                                    I confirm the submitted information is accurate and I am authorized by my department to request secure platform access.
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end">
+                            <a href="javascript:history.back()" class="inline-flex items-center justify-center rounded-xl border border-slate-500/50 bg-slate-800/70 px-4 py-2.5 text-sm font-medium text-slate-100 transition hover:bg-slate-700/80 focus:outline-none focus:ring-4 focus:ring-slate-300/20">
+                                Cancel / Back
+                            </a>
+                            <button id="submit-btn" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-lg shadow-cyan-500/30 transition hover:bg-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-300/40 disabled:cursor-not-allowed disabled:opacity-70">
+                                <svg id="loading-spinner" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10" class="opacity-25" stroke="currentColor" stroke-width="4"></circle>
+                                    <path d="M22 12a10 10 0 0 1-10 10" class="opacity-90" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+                                </svg>
+                                <span id="submit-text">Submit Request</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+
+

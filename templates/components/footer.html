@@ -1,0 +1,53 @@
+<footer class="relative bg-white border-t border-slate-200 py-6 mt-auto overflow-hidden">
+    
+    <!-- Soft 3D Glow Background -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -top-10 left-1/4 w-72 h-72 bg-indigo-500/10 blur-3xl rounded-full"></div>
+        <div class="absolute -bottom-16 right-1/4 w-80 h-80 bg-violet-500/10 blur-3xl rounded-full"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6">
+        
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6
+                    bg-white/70 backdrop-blur-xl
+                    border border-slate-200/70
+                    shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)]
+                    rounded-2xl
+                    px-6 py-5
+                    transition-all duration-500 hover:shadow-[0_25px_70px_-15px_rgba(79,70,229,0.25)]">
+
+            <!-- Left -->
+            <div class="text-center md:text-left space-y-1">
+                <p class="text-sm text-slate-500">
+                    &copy; 2026 
+                    <span class="font-bold text-slate-700 tracking-wide">
+                        {{ system_settings.general.platform_name|default:"Fixora" }}
+                    </span>. All rights reserved.
+                </p>
+
+                <p class="text-xs text-slate-400 tracking-wide">
+                    Developed by 
+                    <span class="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors duration-300">
+                        {{ system_settings.general.platform_name|default:"Fixora" }} Team
+                    </span>
+                </p>
+            </div>
+
+            <!-- Right -->
+            <div class="flex gap-6">
+                <a href="{% url 'main:privacy_policy' %}" 
+                   class="text-sm text-slate-500 hover:text-indigo-600 
+                          transition-all duration-300 hover:-translate-y-0.5">
+                    Privacy Policy
+                </a>
+
+                <a href="{% url 'main:terms_of_service' %}" 
+                   class="text-sm text-slate-500 hover:text-indigo-600 
+                          transition-all duration-300 hover:-translate-y-0.5">
+                    Terms of Service
+                </a>
+            </div>
+
+        </div>
+    </div>
+</footer>

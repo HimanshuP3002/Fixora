@@ -1,0 +1,174 @@
+{% extends "layout/auth_layout.html" %}
+{% load socialaccount %}
+
+{% block title %}Register Account{% endblock title %}
+
+{% block auth_content %}
+<div class="auth-wrapper min-h-screen flex items-center justify-center p-4 py-8">
+    
+    <form action="{% url 'main:register' %}" method="post" autocomplete="off"
+          class="login-form w-full max-w-3xl bg-[#0f172a]/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-8 md:p-10">
+        
+        <div class="login-container">
+            
+            <div class="form-header text-center mb-8">
+                <h2 class="text-3xl font-bold text-white tracking-tight mb-2">Create Account</h2>
+                <p class="text-cyan-400/80 text-sm font-medium">Join the Fixora community</p>
+            </div>
+
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                
+                <div class="form-group">
+                    <label for="name" class="block text-gray-300 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Full Name</label>
+                    <input type="text" id="name" name="name"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                        placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group relative">
+                    <label for="user" class="block text-gray-300 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Username</label>
+                    <input type="text" id="user" name="user"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                        placeholder="Choose a username" required>
+                    
+                    <div id="username-suggestions" class="flex flex-wrap gap-2 mt-3 min-h-[24px]">
+                        <span class="text-xs text-gray-500 italic">Type full name to see suggestions...</span>
+                    </div>
+                </div>
+
+                <div class="form-group md:col-span-2">
+                    <label for="email" class="block text-gray-300 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                    <input type="email" id="email" name="email"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                        placeholder="name@company.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pass" class="block text-gray-300 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Password</label>
+                    <div class="relative group">
+                        <input type="password" id="pass" name="pass"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                            placeholder="Create password" required>
+                        <button type="button" id="togglePass" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-cyan-400 transition-colors">
+                            <span id="togglePassIcon" class="material-icons text-xl">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpass" class="block text-gray-300 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
+                    <div class="relative group">
+                        <input type="password" id="cpass" name="cpass"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                            placeholder="Confirm password" required>
+                        <button type="button" id="toggleCPass" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-cyan-400 transition-colors">
+                            <span id="toggleCPassIcon" class="material-icons text-xl">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex items-center mb-8 pl-1">
+                <input type="checkbox" id="terms" name="terms" class="w-4 h-4 rounded border-gray-600 bg-white/5 text-cyan-500 focus:ring-cyan-500/40 focus:ring-offset-0 cursor-pointer">
+                <label for="terms" class="ml-3 text-sm text-gray-400">
+                    I agree to the <a href="#" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Terms</a> and <a href="#" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-teal-500 hover:from-cyan-500 hover:to-teal-400 text-white font-bold rounded-xl transform transition active:scale-95 shadow-xl shadow-cyan-900/20 mb-8 tracking-wide">
+                Create Account
+            </button>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 pt-6">
+                <p class="text-gray-400 text-sm order-2 md:order-1">
+                    Already have an account? <a href="{% url 'main:login' %}" class="text-cyan-400 font-bold hover:text-cyan-300 transition-colors">Login</a>
+                </p>
+
+                <div class="flex items-center gap-3 order-1 md:order-2">
+                    <a href="{% provider_login_url 'google' process='login' %}" class="group flex items-center justify-center w-10 h-10 bg-white/5 border border-white/10 rounded-lg transition-all duration-300 hover:bg-white/10 hover:border-cyan-500/50 hover:-translate-y-1 shadow-lg" aria-label="Continue with Google">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-.9 3.34-2 4.41-1.16 1.16-3 2.1-5.84 2.1-4.5 0-8.12-3.66-8.12-8.14s3.62-8.14 8.12-8.14c2.48 0 4.5.94 5.92 2.34l2.3-2.3C18.66 2.44 15.85 1 12.48 1 6.48 1 1.6 5.86 1.6 11.87s4.88 10.87 10.87 10.87c3.2 0 5.6-1.06 7.4-2.9 1.9-1.9 2.5-4.66 2.5-7.12 0-.46-.04-.9-.12-1.3l-9.78.02Z"/></svg>
+                    </a>
+                    <a href="{% provider_login_url 'facebook' process='login' %}" class="group flex items-center justify-center w-10 h-10 bg-white/5 border border-white/10 rounded-lg transition-all duration-300 hover:bg-white/10 hover:border-blue-500/50 hover:-translate-y-1 shadow-lg" aria-label="Continue with Facebook">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .login-container { background: transparent; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .suggestion-chip { animation: fadeIn 0.3s ease-out forwards; }
+</style>
+
+<script>
+    // 1. Password Visibility Logic
+    function setupPasswordToggle(inputId, toggleId, iconId) {
+        const toggleButton = document.getElementById(toggleId);
+        const passwordInput = document.getElementById(inputId);
+        const toggleIcon = document.getElementById(iconId);
+        if (toggleButton && passwordInput && toggleIcon) {
+            toggleButton.addEventListener("click", function () {
+                const isPassword = passwordInput.getAttribute("type") === "password";
+                passwordInput.setAttribute("type", isPassword ? "text" : "password");
+                toggleIcon.textContent = isPassword ? "visibility" : "visibility_off";
+            });
+        }
+    }
+    setupPasswordToggle("pass", "togglePass", "togglePassIcon");
+    setupPasswordToggle("cpass", "toggleCPass", "toggleCPassIcon");
+
+    // 2. Smart Username Suggestion Logic
+    const nameInput = document.getElementById('name');
+    const userInput = document.getElementById('user');
+    const suggestionsBox = document.getElementById('username-suggestions');
+
+    nameInput.addEventListener('input', function() {
+        const fullName = this.value.trim().toLowerCase();
+        
+        if(fullName.length < 3) {
+            suggestionsBox.innerHTML = '<span class="text-xs text-gray-500 italic">Type full name to see suggestions...</span>';
+            return;
+        }
+
+        const parts = fullName.split(' ').filter(p => p.length > 0);
+        const rand = Math.floor(Math.random() * 900) + 100;
+        let suggestions = [];
+
+        if (parts.length >= 2) {
+            const first = parts[0].replace(/[^a-z0-9]/g, '');
+            const last = parts[parts.length - 1].replace(/[^a-z0-9]/g, '');
+            suggestions.push(`${first}.${last}`);
+            suggestions.push(`${first}${last}${rand}`);
+            suggestions.push(`${last}_${first}`);
+        } else {
+            const name = parts[0].replace(/[^a-z0-9]/g, '');
+            suggestions.push(`${name}${rand}`);
+            suggestions.push(`${name}.official`);
+            suggestions.push(`real_${name}`);
+        }
+
+        // Render Suggestions
+        suggestionsBox.innerHTML = '';
+        suggestions.forEach(sugg => {
+            const chip = document.createElement('div');
+            chip.className = 'suggestion-chip cursor-pointer bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 text-cyan-300 text-xs px-3 py-1.5 rounded-full transition-all duration-200 select-none';
+            chip.textContent = sugg;
+            
+            // CLICK HANDLER: Fills input AND clears suggestions
+            chip.addEventListener('click', () => {
+                userInput.value = sugg;
+                suggestionsBox.innerHTML = ''; // <--- This line hides the suggestions
+            });
+            
+            suggestionsBox.appendChild(chip);
+        });
+    });
+</script>
+
+{% endblock auth_content %}

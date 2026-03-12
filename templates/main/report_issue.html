@@ -1,0 +1,270 @@
+{% extends 'layout/main_layout.html' %}
+{% load static %}
+
+{% block title %}Register Issue{% endblock title %}
+
+{% block content %}
+<div class="relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-4 sm:p-6 lg:p-8">
+    <div class="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-20 -right-16 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.8),transparent_50%),radial-gradient(circle_at_85%_85%,rgba(99,102,241,0.08),transparent_52%)]"></div>
+
+    <div class="relative mx-auto max-w-7xl">
+        <div class="mb-8 flex flex-col gap-3">
+            <p class="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-700">
+                <span class="material-symbols-rounded text-sm">campaign</span>
+                Civic Intelligence Desk
+            </p>
+            <h1 class="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Register New Issue</h1>
+            <p class="max-w-3xl text-sm text-slate-600 sm:text-base">Submit your complaint with clear details. Fixora will prioritize and route your issue intelligently.</p>
+        </div>
+
+        {% if err %}
+        <div class="mb-8 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 shadow-sm">
+            {{ err }}
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-6 lg:grid-cols-3" autocomplete="off">
+            {% csrf_token %}
+
+            <div class="space-y-6 lg:col-span-2">
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                    <label class="mb-2 ml-1 block text-xs font-bold uppercase tracking-wider text-slate-600">Tracking ID</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-rounded absolute left-4 {% if IssueID %}text-emerald-600{% else %}text-slate-400{% endif %}">{% if IssueID %}verified{% else %}pending{% endif %}</span>
+                        <input type="text" value="{% if IssueID %}{{ IssueID }}{% else %}Auto-Generated After Submit{% endif %}" readonly class="w-full rounded-xl border pl-12 pr-4 py-3.5 text-sm font-bold cursor-not-allowed {% if IssueID %}border-emerald-200 bg-emerald-50 text-emerald-800{% else %}border-slate-200 bg-slate-50 text-slate-500{% endif %}">
+                    </div>
+                </section>
+
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                    <label class="mb-4 block text-xs font-bold uppercase tracking-wider text-slate-600">Select Category <span class="text-rose-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="cat" value="road" class="peer sr-only" checked onchange="updateUI('road')">
+                            <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center transition-all duration-300 group-hover:border-indigo-200 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:shadow-md">
+                                <span class="material-symbols-rounded mb-2 block text-2xl text-slate-400 peer-checked:text-indigo-600">add_road</span>
+                                <span class="text-xs font-bold text-slate-600 peer-checked:text-indigo-700">Roads</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="cat" value="garbage" class="peer sr-only" onchange="updateUI('garbage')">
+                            <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center transition-all duration-300 group-hover:border-rose-200 peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:shadow-md">
+                                <span class="material-symbols-rounded mb-2 block text-2xl text-slate-400 peer-checked:text-rose-600">delete</span>
+                                <span class="text-xs font-bold text-slate-600 peer-checked:text-rose-700">Garbage</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="cat" value="water" class="peer sr-only" onchange="updateUI('water')">
+                            <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center transition-all duration-300 group-hover:border-cyan-200 peer-checked:border-cyan-500 peer-checked:bg-cyan-50 peer-checked:shadow-md">
+                                <span class="material-symbols-rounded mb-2 block text-2xl text-slate-400 peer-checked:text-cyan-600">water_drop</span>
+                                <span class="text-xs font-bold text-slate-600 peer-checked:text-cyan-700">Water</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="cat" value="electric" class="peer sr-only" onchange="updateUI('electric')">
+                            <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center transition-all duration-300 group-hover:border-amber-200 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:shadow-md">
+                                <span class="material-symbols-rounded mb-2 block text-2xl text-slate-400 peer-checked:text-amber-600">bolt</span>
+                                <span class="text-xs font-bold text-slate-600 peer-checked:text-amber-700">Electricity</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="space-y-6 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Issue Title <span class="text-rose-500">*</span></label>
+                            <input type="text" name="ttl" id="titleInput" required placeholder="e.g. Deep Pothole" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-700 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        </div>
+                        <div>
+                            <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Contact Number <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="phoneInput" placeholder="Enter mobile number" data-intl-phone="true" data-hidden-input="fullPhone" autocomplete="off" required class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-700 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <input type="hidden" name="cont" id="fullPhone">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Location <span class="text-rose-500">*</span></label>
+                            <div class="relative">
+                                <span class="material-symbols-rounded absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">location_on</span>
+                                <input type="text" id="locationInput" name="loc" required placeholder="Enter full area/location" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-slate-700 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Landmark</label>
+                            <input type="text" name="lnd" placeholder="e.g. Near City Hospital" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-700 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Priority Level <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="urg" value="Low" class="peer sr-only">
+                                <div class="rounded-xl border border-slate-200 bg-white px-2 py-3 text-center transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:ring-1 peer-checked:ring-emerald-500">
+                                    <span class="material-symbols-rounded mb-1 block text-emerald-400">low_priority</span>
+                                    <span class="text-xs font-bold text-slate-600">Low</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="urg" value="Medium" class="peer sr-only" checked>
+                                <div class="rounded-xl border border-slate-200 bg-white px-2 py-3 text-center transition-all duration-200 hover:border-amber-300 hover:bg-amber-50 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:ring-1 peer-checked:ring-amber-500">
+                                    <span class="material-symbols-rounded mb-1 block text-amber-400">equal</span>
+                                    <span class="text-xs font-bold text-slate-600">Medium</span>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="urg" value="High" class="peer sr-only">
+                                <div class="rounded-xl border border-slate-200 bg-white px-2 py-3 text-center transition-all duration-200 hover:border-rose-300 hover:bg-rose-50 peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:ring-1 peer-checked:ring-rose-500">
+                                    <span class="material-symbols-rounded mb-1 block text-rose-400">priority_high</span>
+                                    <span class="text-xs font-bold text-slate-600">High</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Description <span class="text-rose-500">*</span></label>
+                        <textarea name="desc" id="descInput" rows="4" required placeholder="Describe details..." class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-700 transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"></textarea>
+                    </div>
+                </section>
+
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                    <label class="mb-4 ml-1 block text-sm font-bold text-slate-700">Evidence <span class="text-rose-500">*</span></label>
+                    <div class="relative group">
+                        <input type="file" name="img" required id="fileInput" class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" onchange="previewFile()">
+                        <div id="dropZone" class="flex h-36 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 transition-all group-hover:border-indigo-400">
+                            <div id="uploadPrompt" class="text-center">
+                                <span class="material-symbols-rounded mb-1 text-4xl text-indigo-400">cloud_upload</span>
+                                <p class="text-xs font-semibold text-slate-500">Upload Evidence Photo</p>
+                            </div>
+                            <div id="filePreview" class="hidden flex-col items-center">
+                                <img id="previewImage" src="" class="mb-1 h-24 rounded-lg object-cover shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <aside class="space-y-6 lg:col-span-1">
+                <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-cyan-900 p-6 text-white shadow-xl">
+                    <div class="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-cyan-300/20 blur-3xl"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-cyan-300">smart_toy</span>
+                            <h3 class="text-sm font-bold uppercase tracking-wider">AI Prediction</h3>
+                        </div>
+
+                        <div class="h-1.5 overflow-hidden rounded-full bg-white/10">
+                            <div id="aiConfidenceBar" class="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-400 transition-all duration-500" style="width: 18%;"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-xl border border-white/10 bg-white/10 p-3">
+                                <p class="text-[10px] uppercase tracking-wider text-indigo-200">Predicted Category</p>
+                                <p id="aiCategoryText" class="mt-1 text-sm font-bold text-white">Road</p>
+                            </div>
+                            <div class="rounded-xl border border-white/10 bg-white/10 p-3">
+                                <p class="text-[10px] uppercase tracking-wider text-indigo-200">Predicted Priority</p>
+                                <p id="aiPriorityText" class="mt-1 text-sm font-bold text-amber-300">Medium</p>
+                            </div>
+                        </div>
+
+                        <div class="rounded-xl border border-white/10 bg-white/10 p-3">
+                            <p class="text-[10px] uppercase tracking-wider text-indigo-200">Confidence</p>
+                            <p id="aiConfidenceText" class="mt-1 text-sm font-bold text-emerald-300">18%</p>
+                        </div>
+
+                        <div class="rounded-xl border border-white/10 bg-white/10 p-3">
+                            <p class="text-[10px] uppercase tracking-wider text-indigo-200">Reasoning</p>
+                            <p id="aiReasonText" class="mt-1 text-xs text-indigo-100">Add title and description to generate prediction.</p>
+                        </div>
+
+                        <div class="rounded-xl border border-white/10 bg-white/10 p-3">
+                            <p class="text-[10px] uppercase tracking-wider text-indigo-200">Evidence Authenticity</p>
+                            <div class="mt-1 flex items-center gap-2">
+                                <span id="aiAuthenticityBadge" class="inline-flex h-2.5 w-2.5 rounded-full bg-amber-300"></span>
+                                <p id="aiAuthenticityText" class="text-sm font-bold text-amber-300">Awaiting image</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="btn-3d w-full">
+                    <span class="material-symbols-rounded text-lg">rocket_launch</span>
+                    Submit Report
+                </button>
+            </aside>
+        </form>
+    </div>
+</div>
+
+<style>
+    .btn-3d {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        border-radius: 1.1rem;
+        padding: 1rem 1.2rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: #fff;
+        background: linear-gradient(135deg, #0f172a, #1d4ed8 40%, #0ea5e9);
+        box-shadow: 0 12px 0 #0f2d75, 0 24px 40px rgba(14, 78, 180, 0.35);
+        transform: translateY(0);
+        transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+        animation: buttonFloat 2.8s ease-in-out infinite;
+    }
+
+    .btn-3d::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -30%;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+        transform: skewX(-18deg);
+        animation: shineSweep 2.4s ease-in-out infinite;
+    }
+
+    .btn-3d::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        pointer-events: none;
+    }
+
+    .btn-3d:hover {
+        filter: brightness(1.08);
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 15px 0 #0f2d75, 0 30px 44px rgba(14, 78, 180, 0.42);
+    }
+
+    .btn-3d:active {
+        transform: translateY(7px) scale(0.995);
+        box-shadow: 0 7px 0 #0f2d75, 0 14px 22px rgba(14, 78, 180, 0.3);
+        animation: none;
+    }
+
+    @keyframes shineSweep {
+        0% { left: -35%; }
+        60% { left: 125%; }
+        100% { left: 125%; }
+    }
+
+    @keyframes buttonFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-1px); }
+    }
+</style>
+{% endblock %}

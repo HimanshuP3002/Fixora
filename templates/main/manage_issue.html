@@ -1,0 +1,407 @@
+{% extends "layout/main_layout.html" %}
+{% block title %}Issue Management{% endblock title %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;700&display=swap');
+
+    :root {
+        --ink: #0f172a;
+        --slate: #334155;
+        --ring: rgba(15, 23, 42, 0.08);
+        --panel: rgba(255, 255, 255, 0.8);
+    }
+
+    .mi-page {
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        color: var(--ink);
+        background: radial-gradient(1200px 500px at 15% -10%, #ffe4e6 0%, transparent 60%),
+                    radial-gradient(1000px 500px at 90% 10%, #e0f2fe 0%, transparent 60%),
+                    linear-gradient(120deg, #f8fafc 0%, #eef2ff 40%, #fef9c3 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mi-aurora {
+        position: absolute;
+        inset: -30% -10%;
+        background:
+            radial-gradient(500px 400px at 15% 20%, rgba(255, 107, 107, 0.25), transparent 60%),
+            radial-gradient(600px 480px at 85% 25%, rgba(79, 70, 229, 0.25), transparent 60%),
+            radial-gradient(520px 420px at 40% 85%, rgba(34, 197, 94, 0.18), transparent 60%);
+        filter: blur(10px) saturate(120%);
+        animation: mi-float 16s ease-in-out infinite alternate;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .mi-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.9), transparent 55%);
+        opacity: 0.5;
+        animation: mi-pan 30s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .mi-shell {
+        position: relative;
+        z-index: 1;
+        padding: 28px;
+    }
+
+    .mi-title {
+        font-family: "Fraunces", serif;
+        font-size: clamp(1.8rem, 2.4vw + 1rem, 2.7rem);
+        letter-spacing: -0.02em;
+    }
+
+    .mi-card {
+        background: var(--panel);
+        border: 1px solid var(--ring);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        border-radius: 20px;
+    }
+
+    .mi-tab {
+        transition: all 0.2s ease;
+        border-bottom: 3px solid transparent;
+    }
+
+    .mi-tab.is-active {
+        color: #111827;
+        border-color: #111827;
+    }
+
+    .mi-table-wrap {
+        perspective: 1200px;
+        transform-style: preserve-3d;
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .mi-table {
+        transform: rotateX(1.2deg);
+        transform-origin: center top;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .mi-row {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .mi-row:hover {
+        background: rgba(15, 23, 42, 0.04);
+        transform: translateZ(6px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+    }
+
+    .mi-action {
+        border-radius: 12px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        background: #0f172a;
+        color: #fff;
+        transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .mi-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+    }
+
+    .mi-ghost {
+        background: rgba(255, 255, 255, 0.85);
+        color: var(--ink);
+        border: 1px solid var(--ring);
+    }
+
+    .mi-badge {
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    .mi-badge.hot { background: #fee2e2; color: #b91c1c; }
+    .mi-badge.mid { background: #fef3c7; color: #b45309; }
+    .mi-badge.low { background: #dcfce7; color: #15803d; }
+    .mi-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        background: rgba(255, 255, 255, 0.9);
+        color: #334155;
+    }
+
+    .mi-pager-wrap {
+        border-top: 1px solid rgba(15, 23, 42, 0.08);
+        background: linear-gradient(120deg, rgba(255,255,255,0.82), rgba(241,245,249,0.9));
+        perspective: 1200px;
+        transform-style: preserve-3d;
+    }
+    .mi-page-btn {
+        min-width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.92));
+        color: #334155;
+        font-size: 0.82rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform .18s ease, box-shadow .25s ease, border-color .2s ease;
+        transform: translateZ(0) rotateX(10deg);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.95),
+            0 8px 0 #cbd5e1,
+            0 14px 24px -16px rgba(15, 23, 42, 0.75);
+    }
+    .mi-page-btn:hover {
+        transform: translateY(-4px) translateZ(8px) rotateX(0deg);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.95),
+            0 6px 0 #cbd5e1,
+            0 18px 26px -14px rgba(15, 23, 42, 0.9);
+    }
+    .mi-page-btn:active {
+        transform: translateY(2px) translateZ(0) rotateX(12deg);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 3px 0 #cbd5e1,
+            0 8px 16px -14px rgba(15, 23, 42, 0.7);
+    }
+    .mi-page-btn.active {
+        border-color: transparent;
+        color: #fff;
+        background: linear-gradient(120deg, #0f172a, #334155, #4f46e5);
+        transform: translateY(-3px) translateZ(14px) rotateX(0deg);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+            0 7px 0 #312e81,
+            0 18px 26px -12px rgba(79, 70, 229, 0.9);
+    }
+    .mi-page-btn.ghost {
+        background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.9));
+    }
+
+    @keyframes mi-float {
+        0% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(30px, -20px, 0) scale(1.02); }
+        100% { transform: translate3d(-20px, 30px, 0) scale(1.01); }
+    }
+
+    @keyframes mi-pan {
+        from { background-position: 0 0, 0 0; }
+        to { background-position: 200px 0, 0 200px; }
+    }
+</style>
+
+<div class="mi-page min-h-screen">
+    <div class="mi-aurora"></div>
+    <div class="mi-grid"></div>
+
+    <div class="mi-shell">
+        <div class="mi-card p-6 mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <h1 class="mi-title">Issue Management</h1>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Review, approve, reject, and assign reported issues.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mi-card p-4 mb-6">
+            <div class="flex flex-wrap gap-3">
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'All Issues' %}is-active{% endif %}"
+                   href="?tab=All%20Issues">All Issues</a>
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'Reported' %}is-active{% endif %}"
+                   href="?tab=Reported">Reported</a>
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'In Review' %}is-active{% endif %}"
+                   href="?tab=In%20Review">In Review</a>
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'In Progress' %}is-active{% endif %}"
+                   href="?tab=In%20Progress">In Progress</a>
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'Resolved' %}is-active{% endif %}"
+                   href="?tab=Resolved">Resolved</a>
+                <a class="mi-tab px-4 py-2 text-sm font-medium {% if current_tab == 'Rejected' %}is-active{% endif %}"
+                   href="?tab=Rejected">Rejected</a>
+            </div>
+        </div>
+
+        <div class="mi-card overflow-hidden mi-table-wrap">
+            {% if issues %}
+            <div class="overflow-x-auto">
+                <table class="mi-table min-w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wide">
+                            <th class="px-4 py-3"><input type="checkbox"></th>
+                            <th class="px-4 py-3 text-left">Issue ID</th>
+                            <th class="px-4 py-3 text-left">Image</th>
+                            <th class="px-4 py-3 text-left">Title</th>
+                            <th class="px-4 py-3 text-left">Category</th>
+                            <th class="px-4 py-3 text-left">Severity</th>
+                            <th class="px-4 py-3 text-left">Reporter</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-left">Department</th>
+                            <th class="px-4 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        {% for issue in issues %}
+                        <tr class="mi-row {% if issue.severity == 'Critical' %}bg-red-50/60{% endif %}">
+                            <td class="px-4 py-3">
+                                <input type="checkbox">
+                            </td>
+                            <td class="px-4 py-3 font-medium text-slate-700">
+                                {{ issue.issue_id }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if issue.image %}
+                                <img src="{{ issue.image }}" class="h-10 w-14 rounded-lg object-cover border">
+                                {% else %}
+                                <div class="h-10 w-14 rounded-lg bg-slate-100 flex items-center justify-center text-xs text-slate-400">
+                                    N/A
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 font-medium text-slate-700">
+                                {{ issue.title }}
+                            </td>
+                            <td class="px-4 py-3 text-slate-600">
+                                {{ issue.category }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if issue.severity == 'High' or issue.severity == 'Critical' %}
+                                <span class="mi-badge hot">{{ issue.severity }}</span>
+                                {% elif issue.severity == 'Medium' %}
+                                <span class="mi-badge mid">Medium</span>
+                                {% else %}
+                                <span class="mi-badge low">Low</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-slate-600">
+                                {{ issue.reporter }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="mi-pill">{{ issue.status }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-slate-600">
+                                {{ issue.department|default:"Unassigned" }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex justify-end gap-2">
+                                    <form method="post" action="{% url 'main:issue_management' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="issue_id" value="{{ issue.issue_id }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button class="mi-action mi-ghost" type="submit">Approve</button>
+                                    </form>
+                                    <form method="post" action="{% url 'main:issue_management' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="issue_id" value="{{ issue.issue_id }}">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button class="mi-action mi-ghost" type="submit">Reject</button>
+                                    </form>
+                                    {% if can_assign_issue %}
+                                    <form method="post" action="{% url 'main:issue_management' %}" class="flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="issue_id" value="{{ issue.issue_id }}">
+                                        <input type="hidden" name="action" value="assign">
+                                        <select name="authority" class="rounded-lg border border-slate-200 bg-white/90 px-2 py-1 text-xs">
+                                            <option value="">Assign...</option>
+                                            {% for a in authorities %}
+                                            <option value="{{ a }}">{{ a }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button class="mi-action" type="submit">Assign</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mi-pager-wrap px-4 py-4 sm:px-6">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-xs sm:text-sm text-slate-600">
+                        Showing <span class="font-semibold text-slate-800">{{ page_start }}</span> -
+                        <span class="font-semibold text-slate-800">{{ page_end }}</span>
+                        of <span class="font-semibold text-slate-800">{{ total_issues }}</span> issues
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        {% if page_obj.has_previous %}
+                        <a class="mi-page-btn ghost px-3"
+                           href="?tab={{ current_tab|urlencode }}&page={{ page_obj.previous_page_number }}">
+                            Prev
+                        </a>
+                        {% else %}
+                        <span class="mi-page-btn ghost px-3 opacity-50 cursor-not-allowed">Prev</span>
+                        {% endif %}
+
+                        {% if page_obj.number > 3 %}
+                        <a class="mi-page-btn" href="?tab={{ current_tab|urlencode }}&page=1">1</a>
+                        {% if page_obj.number > 4 %}
+                        <span class="px-1 text-slate-500">...</span>
+                        {% endif %}
+                        {% endif %}
+
+                        {% for n in page_numbers %}
+                        <a class="mi-page-btn {% if page_obj.number == n %}active{% endif %}"
+                           href="?tab={{ current_tab|urlencode }}&page={{ n }}">
+                            {{ n }}
+                        </a>
+                        {% endfor %}
+
+                        {% if page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+                        {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                        <span class="px-1 text-slate-500">...</span>
+                        {% endif %}
+                        <a class="mi-page-btn"
+                           href="?tab={{ current_tab|urlencode }}&page={{ page_obj.paginator.num_pages }}">
+                            {{ page_obj.paginator.num_pages }}
+                        </a>
+                        {% endif %}
+
+                        {% if page_obj.has_next %}
+                        <a class="mi-page-btn ghost px-3"
+                           href="?tab={{ current_tab|urlencode }}&page={{ page_obj.next_page_number }}">
+                            Next
+                        </a>
+                        {% else %}
+                        <span class="mi-page-btn ghost px-3 opacity-50 cursor-not-allowed">Next</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-24 text-center">
+                <h3 class="text-lg font-semibold text-slate-700">No Issues to Manage</h3>
+                <p class="text-sm text-slate-500 mt-2">
+                    All issues are up to date. Nothing requires moderation right now.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

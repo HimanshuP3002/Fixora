@@ -1,0 +1,126 @@
+{% extends "layout/auth_layout.html" %}
+{% load socialaccount %}
+
+{% block title %}Login Screen{% endblock title %}
+
+{% block auth_content %}
+<div class="auth-wrapper p-8">
+    <form action="{% url 'main:login' %}" autocomplete="off" method="post" class="login-form w-full">
+        <div class="login-container">
+            <div class="form-header text-center mb-8">
+                <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
+                <p class="text-cyan-300/80 text-sm">Sign in to your account</p>
+            </div>
+            
+            {% csrf_token %}
+            
+            <div class="form-group mb-6">
+                <label for="username" class="block text-white text-xs font-bold uppercase tracking-widest mb-2 ml-1">Username</label>
+                <input type="text" id="username" name="user"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                    placeholder="Enter your username" required>
+            </div>
+            
+            <div class="form-group mb-8">
+                <label for="password" class="block text-white text-xs font-bold uppercase tracking-widest mb-2 ml-1">Password</label>
+                <div class="relative group">
+                    <input type="password" id="password" name="pass"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-12 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-inner" 
+                        placeholder="Enter your password" required>
+                    
+                    <button type="button" id="togglePassword" class="absolute right-0 top-0 h-full px-4 text-gray-400 hover:text-cyan-400 focus:outline-none transition-colors cursor-pointer flex items-center justify-center">
+                        <svg id="icon-show" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <svg id="icon-hide" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-teal-500 hover:from-cyan-500 hover:to-teal-400 text-white font-bold rounded-xl transform transition active:scale-95 shadow-xl shadow-cyan-900/20 mb-6 tracking-wide">
+                Login
+            </button>
+            
+            <div class="relative my-8 text-center">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                <span class="relative px-4 bg-transparent text-gray-400 text-xs font-semibold uppercase tracking-wider">or sign in with</span>
+            </div>
+
+            <div class="flex items-center justify-center gap-6 mb-4">
+                {% if google_enabled %}
+                <a href="{% provider_login_url 'google' process='login' %}" class="group flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/10 hover:border-cyan-500/50 hover:-translate-y-1 shadow-lg" aria-label="Login with Google">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-.9 3.34-2 4.41-1.16 1.16-3 2.1-5.84 2.1-4.5 0-8.12-3.66-8.12-8.14s3.62-8.14 8.12-8.14c2.48 0 4.5.94 5.92 2.34l2.3-2.3C18.66 2.44 15.85 1 12.48 1 6.48 1 1.6 5.86 1.6 11.87s4.88 10.87 10.88 10.87c3.2 0 5.6-1.06 7.4-2.9 1.9-1.9 2.5-4.66 2.5-7.12 0-.46-.04-.9-.12-1.3l-9.78.02Z" />
+                    </svg>
+                </a>
+                {% else %}
+                <button type="button" data-provider="Google" class="js-coming-soon group flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/10 hover:border-cyan-500/50 hover:-translate-y-1 shadow-lg opacity-60" aria-label="Google login coming soon">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-.9 3.34-2 4.41-1.16 1.16-3 2.1-5.84 2.1-4.5 0-8.12-3.66-8.12-8.14s3.62-8.14 8.12-8.14c2.48 0 4.5.94 5.92 2.34l2.3-2.3C18.66 2.44 15.85 1 12.48 1 6.48 1 1.6 5.86 1.6 11.87s4.88 10.87 10.88 10.87c3.2 0 5.6-1.06 7.4-2.9 1.9-1.9 2.5-4.66 2.5-7.12 0-.46-.04-.9-.12-1.3l-9.78.02Z" />
+                    </svg>
+                </button>
+                {% endif %}
+                {% if facebook_enabled %}
+                <a href="{% provider_login_url 'facebook' process='login' %}" class="group flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/10 hover:border-blue-500/50 hover:-translate-y-1 shadow-lg" aria-label="Login with Facebook">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24">
+                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                </a>
+                {% else %}
+                <button type="button" data-provider="Facebook" class="js-coming-soon group flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 hover:bg-white/10 hover:border-blue-500/50 hover:-translate-y-1 shadow-lg opacity-60" aria-label="Facebook login coming soon">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24">
+                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                </button>
+                {% endif %}
+            </div>
+
+            <p id="coming-soon-message" class="text-center text-amber-300 text-xs font-semibold uppercase tracking-wider hidden">Coming soon</p>
+            
+            <p class="text-center text-gray-400 text-sm">
+                Don't have an account? <a href="{% url 'main:register' %}" class="text-cyan-400 font-bold hover:text-cyan-300 transition-colors hover:underline">Sign up</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+<style>
+    .auth-wrapper { display: flex; justify-content: center; align-items: center; }
+    .login-form { width: 100%; }
+    .login-container { background: transparent; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const iconShow = document.getElementById('icon-show');
+        const iconHide = document.getElementById('icon-hide');
+        const comingSoonMessage = document.getElementById('coming-soon-message');
+        const comingSoonButtons = document.querySelectorAll('.js-coming-soon');
+
+        toggleBtn.addEventListener('click', function() {
+            // Toggle Input Type
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle Icons
+            iconShow.classList.toggle('hidden');
+            iconHide.classList.toggle('hidden');
+        });
+
+        comingSoonButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const provider = btn.getAttribute('data-provider') || 'This feature';
+                if (comingSoonMessage) {
+                    comingSoonMessage.textContent = provider + ' login is coming soon';
+                    comingSoonMessage.classList.remove('hidden');
+                }
+            });
+        });
+    });
+</script>
+{% endblock auth_content %}

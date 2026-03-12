@@ -1,0 +1,443 @@
+{% extends "layout/main_layout.html" %}
+
+{% block title %}All Issues{% endblock title %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --fx-ink: #0f172a;
+        --fx-ink-soft: #334155;
+        --fx-mist: #eef2f6;
+        --fx-grid: rgba(15, 23, 42, 0.08);
+        --fx-mint: #22c1c3;
+        --fx-ember: #f59e0b;
+        --fx-rose: #f97316;
+        --fx-glow: rgba(34, 193, 195, 0.35);
+    }
+
+    .fx-shell {
+        font-family: "Space Grotesk", sans-serif;
+    }
+
+    .fx-bg {
+        background:
+            radial-gradient(circle at 10% 10%, rgba(34, 193, 195, 0.20), transparent 45%),
+            radial-gradient(circle at 90% 15%, rgba(249, 115, 22, 0.20), transparent 40%),
+            linear-gradient(160deg, #f8fafc 0%, #eef2f6 45%, #f8fafc 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .fx-grid {
+        position: absolute;
+        inset: -40px;
+        background-image:
+            linear-gradient(var(--fx-grid) 1px, transparent 1px),
+            linear-gradient(90deg, var(--fx-grid) 1px, transparent 1px);
+        background-size: 44px 44px;
+        opacity: 0.5;
+        mask-image: radial-gradient(circle at 40% 40%, black 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .fx-orb {
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 999px;
+        filter: blur(18px);
+        opacity: 0.45;
+        animation: float 12s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    .fx-orb.mint {
+        background: radial-gradient(circle, var(--fx-mint), transparent 60%);
+        top: -60px;
+        left: -80px;
+    }
+
+    .fx-orb.ember {
+        background: radial-gradient(circle, var(--fx-rose), transparent 60%);
+        right: -90px;
+        top: 30px;
+        animation-delay: 2s;
+    }
+
+    .fx-orb.sun {
+        background: radial-gradient(circle, var(--fx-ember), transparent 65%);
+        bottom: -120px;
+        left: 30%;
+        animation-delay: 4s;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(18px, -18px) scale(1.05); }
+        100% { transform: translate(0, 0) scale(1); }
+    }
+
+    .fx-card {
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(12px);
+    }
+
+    .fx-chip {
+        background: linear-gradient(120deg, rgba(34, 193, 195, 0.15), rgba(249, 115, 22, 0.15));
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        color: var(--fx-ink-soft);
+    }
+
+    .fx-input {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    }
+
+    .fx-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px var(--fx-glow);
+        border-color: rgba(34, 193, 195, 0.7);
+    }
+
+    .fx-row {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        animation: rowIn 0.4s ease both;
+    }
+
+    .fx-row:nth-child(odd) { animation-delay: 0.03s; }
+    .fx-row:nth-child(even) { animation-delay: 0.06s; }
+
+    @keyframes rowIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fx-table-head {
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0.02));
+    }
+
+    .fx-pill {
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        backdrop-filter: blur(6px);
+    }
+
+    .fx-actions a {
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .fx-pagination button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .fx-page-btn {
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        background: rgba(255, 255, 255, 0.85);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .fx-page-btn:hover {
+        border-color: rgba(15, 23, 42, 0.25);
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+        transform: translateY(-1px);
+    }
+
+    .fx-page-btn.is-active {
+        background: linear-gradient(135deg, #22c1c3, #6366f1);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 10px 20px rgba(34, 193, 195, 0.25);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fx-orb, .fx-row {
+            animation: none !important;
+        }
+    }
+</style>
+
+<div class="fx-shell min-h-screen fx-bg p-6 sm:p-8">
+    <div class="fx-grid"></div>
+    <div class="fx-orb mint"></div>
+    <div class="fx-orb ember"></div>
+    <div class="fx-orb sun"></div>
+
+    <!-- ================= HEADER ================= -->
+    <div class="relative z-10 mb-10">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold fx-chip">
+                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                    City Ops Command
+                </span>
+                <h1 class="mt-4 text-4xl sm:text-5xl font-bold text-[color:var(--fx-ink)] tracking-tight">
+                    All Issues
+                </h1>
+                <p class="text-sm sm:text-base text-[color:var(--fx-ink-soft)] mt-3 max-w-2xl">
+                    A live, high-clarity view of every civic report, organized for fast triage and rapid response.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-4 py-3 rounded-2xl fx-card text-xs text-slate-600">
+                    Updated live from field submissions
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FILTER BAR ================= -->
+    <div class="relative z-10 fx-card rounded-3xl p-6 mb-8">
+        <div class="flex flex-col xl:flex-row gap-4">
+
+            <!-- SEARCH -->
+            <div class="relative flex-1">
+                <input
+                    id="issueSearch"
+                    type="text"
+                    placeholder="Search by issue ID, title, or location..."
+                    class="w-full rounded-2xl px-5 py-3 text-sm fx-input">
+            </div>
+
+            <!-- STATUS -->
+            <select id="statusFilter"
+                class="rounded-2xl px-5 py-3 text-sm fx-input">
+                <option value="">All Status</option>
+                <option>Reported</option>
+                <option>In Progress</option>
+                <option>Resolved</option>
+            </select>
+
+            <!-- CATEGORY -->
+            <select id="categoryFilter"
+                class="rounded-2xl px-5 py-3 text-sm fx-input">
+                <option value="">All Categories</option>
+                <option>Road</option>
+                <option>Water</option>
+                <option>Electricity</option>
+                <option>Garbage</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+    <div class="relative z-10 fx-card rounded-3xl overflow-hidden">
+
+        {% if issues %}
+        <div class="overflow-x-auto hidden md:block">
+            <table class="min-w-full text-sm">
+                <thead class="fx-table-head text-slate-700 uppercase text-[11px] tracking-wider">
+                    <tr>
+                        <th class="px-6 py-4 text-left">Issue ID</th>
+                        <th class="px-6 py-4 text-left">Image</th>
+                        <th class="px-6 py-4 text-left">Title</th>
+                        <th class="px-6 py-4 text-left">Category</th>
+                        <th class="px-6 py-4 text-left">Reported By</th>
+                        <th class="px-6 py-4 text-left">Urgency</th>
+                        <th class="px-6 py-4 text-left">Status</th>
+                        <th class="px-6 py-4 text-left">Location</th>
+                        <th class="px-6 py-4 text-left">Date</th>
+                        <th class="px-6 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y">
+
+                    {% for issue in issues %}
+                    <tr class="group fx-row hover:bg-white/70"
+                        data-issue-id="{{ issue.IssueID|lower }}"
+                        data-title="{{ issue.Title|lower }}"
+                        data-location="{{ issue.Location|lower }}"
+                        data-status="{{ issue.Status|lower }}"
+                        data-category="{{ issue.Category|lower }}">
+
+                        <td class="px-6 py-4 font-semibold text-slate-800">
+                            {{ issue.IssueID }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if issue.Image %}
+                            <img src="{{ issue.Image }}"
+                                 class="h-12 w-16 rounded-2xl object-cover border border-white/40 shadow-sm group-hover:scale-105 transition-transform">
+                            {% else %}
+                            <div class="h-12 w-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xs text-slate-400">
+                                N/A
+                            </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 font-semibold text-slate-900">
+                            {{ issue.Title }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-600">
+                            {{ issue.Category }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-600">
+                            {{ issue.ReportedBy|default:"-" }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if issue.Urgency == "High" %}
+                            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold fx-pill">
+                                High
+                            </span>
+                            {% elif issue.Urgency == "Medium" %}
+                            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold fx-pill">
+                                Medium
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold fx-pill">
+                                Low
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if issue.Status == "Resolved" %}
+                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold fx-pill">
+                                Resolved
+                            </span>
+                            {% elif issue.Status == "In Progress" %}
+                            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold fx-pill">
+                                In Progress
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold fx-pill">
+                                Reported
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-600 truncate max-w-[180px]">
+                            {{ issue.Location }}
+                        </td>
+
+                        <td class="px-6 py-4 text-slate-500">
+                            {{ issue.IssueDate|date:"M d, Y" }}
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+                            <a href="{% url 'main:issue_detail' issue.IssueID %}"
+                               class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:border-slate-300 transition">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="md:hidden divide-y divide-slate-100/70">
+            {% for issue in issues %}
+            <div class="issue-card p-5 flex flex-col gap-4"
+                 data-issue-id="{{ issue.IssueID|lower }}"
+                 data-title="{{ issue.Title|lower }}"
+                 data-location="{{ issue.Location|lower }}"
+                 data-status="{{ issue.Status|lower }}"
+                 data-category="{{ issue.Category|lower }}">
+                <div class="flex items-start gap-4">
+                    {% if issue.Image %}
+                    <img src="{{ issue.Image }}"
+                         class="h-16 w-20 rounded-2xl object-cover border border-white/40 shadow-sm">
+                    {% else %}
+                    <div class="h-16 w-20 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xs text-slate-400">
+                        N/A
+                    </div>
+                    {% endif %}
+
+                    <div class="flex-1">
+                        <div class="text-xs text-slate-500">{{ issue.IssueID }}</div>
+                        <div class="text-base font-semibold text-slate-900 mt-1">{{ issue.Title }}</div>
+                        <div class="text-xs text-slate-500 mt-1">{{ issue.Category }}</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    {% if issue.Urgency == "High" %}
+                    <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold fx-pill">
+                        High
+                    </span>
+                    {% elif issue.Urgency == "Medium" %}
+                    <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold fx-pill">
+                        Medium
+                    </span>
+                    {% else %}
+                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold fx-pill">
+                        Low
+                    </span>
+                    {% endif %}
+
+                    {% if issue.Status == "Resolved" %}
+                    <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold fx-pill">
+                        Resolved
+                    </span>
+                    {% elif issue.Status == "In Progress" %}
+                    <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold fx-pill">
+                        In Progress
+                    </span>
+                    {% else %}
+                    <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold fx-pill">
+                        Reported
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="text-xs text-slate-600">
+                    {{ issue.Location }}
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="text-xs text-slate-500">
+                        {{ issue.IssueDate|date:"M d, Y" }}
+                    </div>
+                    <a href="{% url 'main:issue_detail' issue.IssueID %}"
+                       class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-200 hover:border-slate-300 transition">
+                        View
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="px-6 py-4 border-t border-slate-100/70">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-xs text-slate-500">
+                    <span id="paginationInfo">Showing 0–0 of 0</span>
+                </div>
+                <div class="flex items-center gap-2 fx-pagination">
+                    <button id="prevPage" class="px-3 py-2 rounded-xl text-xs font-semibold fx-page-btn">
+                        Prev
+                    </button>
+                    <div id="pageNumbers" class="flex items-center gap-2"></div>
+                    <button id="nextPage" class="px-3 py-2 rounded-xl text-xs font-semibold fx-page-btn">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="py-24 text-center">
+            <h3 class="text-xl font-semibold text-slate-700">No Issues Found</h3>
+            <p class="text-sm text-slate-500 mt-2">
+                There are no reported civic issues at the moment.
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- ================= FILTER SCRIPT ================= -->
+{% endblock %}
+
+

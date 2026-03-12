@@ -1,0 +1,497 @@
+{% load static %}
+{% extends "layout/main_layout.html" %}
+
+{% block title %}AI Review Queue{% endblock %}
+
+{% block content %}
+{{ queue|json_script:"ai-review-initial-queue" }}
+{{ queue_stats|json_script:"ai-review-initial-stats" }}
+{{ queue_categories|json_script:"ai-review-initial-categories" }}
+{{ queue_pagination|json_script:"ai-review-initial-pagination" }}
+
+<div
+    x-data="aiReviewQueue()"
+    x-init="init()"
+    class="relative min-h-[calc(100vh-9rem)]"
+>
+    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-gradient-to-br from-cyan-100/70 via-indigo-100/60 to-sky-100/60 blur-2xl"></div>
+
+    <section class="mb-7 rounded-3xl border border-slate-200/70 bg-white/85 px-6 py-6 shadow-xl shadow-slate-200/40 backdrop-blur">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-semibold tracking-wide text-cyan-700">
+                    <span class="h-2 w-2 animate-pulse rounded-full bg-cyan-500"></span>
+                    AI Moderation Control
+                </p>
+                <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900">AI Review Queue</h1>
+                <p class="mt-1 text-sm text-slate-500">Review and validate AI training predictions</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p class="text-xs text-slate-500">Pending</p>
+                    <p class="mt-1 text-xl font-bold text-amber-600" x-text="stats.pending_count || 0"></p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p class="text-xs text-slate-500">Reviewed</p>
+                    <p class="mt-1 text-xl font-bold text-emerald-600" x-text="stats.reviewed_count || 0"></p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p class="text-xs text-slate-500">Rejected</p>
+                    <p class="mt-1 text-xl font-bold text-rose-600" x-text="stats.rejected_count || 0"></p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <p class="text-xs text-slate-500">Training Rows</p>
+                    <p class="mt-1 text-xl font-bold text-indigo-600" x-text="stats.training_rows || 0"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-6 rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-lg shadow-slate-200/40 backdrop-blur-sm">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Latest Training Result</p>
+                {% if training_metadata %}
+                    <p class="mt-2 text-sm text-slate-600">
+                        Target: <span class="font-semibold text-slate-800">{{ training_metadata.target }}</span>
+                        | Accuracy: <span class="font-semibold text-emerald-600">{{ training_metadata.accuracy }}</span>
+                        | F1: <span class="font-semibold text-indigo-600">{{ training_metadata.f1_weighted }}</span>
+                    </p>
+                    <p class="mt-1 text-xs text-slate-400">Trained at: {{ training_metadata.trained_at }}</p>
+                {% else %}
+                    <p class="mt-2 text-sm text-slate-500">No training results available yet.</p>
+                {% endif %}
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{% url 'main:train_issue_ml_model' %}"
+                   class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                    <span class="material-symbols-rounded text-base">memory</span>
+                    Open Training
+                </a>
+                <a href="{% url 'main:train_issue_ml_model' %}?action=train"
+                   class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:-translate-y-0.5 hover:shadow-cyan-500/30">
+                    <span class="material-symbols-rounded text-base">bolt</span>
+                    Train Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-6 rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-lg shadow-slate-200/40 backdrop-blur-sm">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Min Confidence</label>
+                <input type="number" step="0.01" min="0" max="1" x-model="filters.confidence_min"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
+            </div>
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Max Confidence</label>
+                <input type="number" step="0.01" min="0" max="1" x-model="filters.confidence_max"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
+            </div>
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Category</label>
+                <select x-model="filters.category"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
+                    <option value="">All Categories</option>
+                    <template x-for="category in categories" :key="category">
+                        <option :value="category" x-text="category"></option>
+                    </template>
+                </select>
+            </div>
+            <div>
+                <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Status</label>
+                <select x-model="filters.status"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="flex items-end gap-2">
+                <button @click="goToPage(1)"
+                    class="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:-translate-y-0.5 hover:shadow-cyan-500/30">
+                    Apply Filters
+                </button>
+                <button @click="resetFilters()"
+                    class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+        <div class="overflow-x-auto">
+            <table class="min-w-[1240px] w-full text-sm">
+                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                        <th class="px-4 py-3">Record ID</th>
+                        <th class="px-4 py-3">Image Preview</th>
+                        <th class="px-4 py-3">AI Predicted Category</th>
+                        <th class="px-4 py-3">Confidence Score</th>
+                        <th class="px-4 py-3">Severity Prediction</th>
+                        <th class="px-4 py-3">Uploaded By</th>
+                        <th class="px-4 py-3">Timestamp</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Review Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <template x-if="loading">
+                        <template x-for="n in 6" :key="'sk-'+n">
+                            <tr>
+                                <td colspan="9" class="px-4 py-3">
+                                    <div class="h-16 animate-pulse rounded-xl bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100"></div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+
+                    <template x-if="!loading && records.length === 0">
+                        <tr>
+                            <td colspan="9" class="px-6 py-20 text-center">
+                                <div class="mx-auto max-w-md">
+                                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
+                                        <span class="material-symbols-rounded text-3xl text-slate-400">task_alt</span>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-slate-800">No Records in Queue</h3>
+                                    <p class="mt-1 text-sm text-slate-500">All AI predictions have been reviewed.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+
+                    <template x-for="record in records" :key="record.record_id">
+                        <tr class="transition"
+                            :class="record.is_low_confidence ? 'bg-rose-50/50 hover:bg-rose-50 border-l-4 border-rose-400' : 'hover:bg-slate-50'">
+                            <td class="px-4 py-3 align-top">
+                                <p class="font-semibold text-slate-800" x-text="record.record_id"></p>
+                                <p x-show="record.source_issue_id" class="mt-0.5 text-xs text-slate-400" x-text="'Issue: ' + record.source_issue_id"></p>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <button @click="openPreview(record)" class="group relative">
+                                    <img :src="record.image || '{% static 'assets/images/logo_without_bg.png' %}'"
+                                        alt="Issue preview"
+                                        class="h-16 w-24 rounded-xl border border-slate-200 object-cover shadow-sm transition group-hover:scale-[1.03]">
+                                </button>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <span class="inline-flex rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700" x-text="record.predicted_label || '-'"></span>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                                    :class="record.confidence >= 0.8 ? 'bg-emerald-100 text-emerald-700' : (record.confidence >= 0.6 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700')"
+                                    x-text="(record.confidence_pct ?? (record.confidence * 100)).toFixed(1) + '%'">
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 align-top text-slate-700" x-text="record.predicted_severity || '-'"></td>
+                            <td class="px-4 py-3 align-top text-slate-700" x-text="record.uploaded_by || '-'"></td>
+                            <td class="px-4 py-3 align-top text-slate-500" x-text="formatDate(record.created_at)"></td>
+                            <td class="px-4 py-3 align-top">
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                                    :class="statusClass(record.status)"
+                                    x-text="record.status"></span>
+                            </td>
+                            <td class="px-4 py-3 align-top">
+                                <div class="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                                    <div class="grid grid-cols-1 gap-2 xl:grid-cols-2">
+                                        <select :value="getDraft(record.record_id).corrected_label"
+                                            @change="setDraft(record.record_id, 'corrected_label', $event.target.value)"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                                            <option value="">Correct Category</option>
+                                            <template x-for="category in categories" :key="record.record_id + '-cat-' + category">
+                                                <option :value="category" x-text="category"></option>
+                                            </template>
+                                        </select>
+                                        <select :value="getDraft(record.record_id).corrected_severity"
+                                            @change="setDraft(record.record_id, 'corrected_severity', $event.target.value)"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100">
+                                            <option value="">Correct Severity</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                            <option value="Critical">Critical</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <button @click="approveRecord(record, false)"
+                                            class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700">
+                                            Approve Prediction
+                                        </button>
+                                        <button @click="saveTraining(record)"
+                                            class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700">
+                                            Save to Training Dataset
+                                        </button>
+                                        <button @click="rejectRecord(record)"
+                                            class="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-rose-700">
+                                            Reject Record
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="mt-4 mb-6 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-lg shadow-slate-200/30 backdrop-blur-sm">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-sm text-slate-600">
+                Showing page <span class="font-semibold text-slate-900" x-text="pagination.page || 1"></span>
+                of <span class="font-semibold text-slate-900" x-text="pagination.total_pages || 0"></span>
+                (<span class="font-semibold text-slate-900" x-text="pagination.total || 0"></span> total records)
+            </div>
+            <div class="flex items-center gap-2">
+                <label class="text-xs font-semibold uppercase tracking-wide text-slate-500">Page Size</label>
+                <select x-model.number="pagination.page_size" @change="goToPage(1)"
+                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100">
+                    <option :value="10">10</option>
+                    <option :value="20">20</option>
+                    <option :value="50">50</option>
+                    <option :value="100">100</option>
+                </select>
+                <button @click="prevPage()" :disabled="!pagination.has_prev || loading"
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
+                    Prev
+                </button>
+                <button @click="nextPage()" :disabled="!pagination.has_next || loading"
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
+                    Next
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <div class="mt-5 flex justify-end">
+        <a href="{% url 'main:ai_review_export_api' %}"
+            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
+            <span class="material-symbols-rounded text-base">download</span>
+            Export Approved Data
+        </a>
+    </div>
+
+    <div x-show="preview.open" x-transition.opacity
+        class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/70 p-4">
+        <div x-show="preview.open" x-transition
+            class="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+            <button @click="preview.open = false"
+                class="absolute right-4 top-4 z-10 rounded-lg bg-slate-900/75 p-1.5 text-white hover:bg-slate-900">
+                <span class="material-symbols-rounded text-base">close</span>
+            </button>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                <div class="border-b border-slate-200 bg-slate-50 lg:border-b-0 lg:border-r">
+                    <img :src="preview.record.image || '{% static 'assets/images/logo_without_bg.png' %}'"
+                        alt="Issue image"
+                        class="h-[22rem] w-full object-cover lg:h-full">
+                </div>
+                <div class="space-y-4 p-6">
+                    <h3 class="text-xl font-bold text-slate-900">Record Preview</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="rounded-xl bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">Record ID</p>
+                            <p class="font-semibold text-slate-800" x-text="preview.record.record_id || '-'"></p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">Category</p>
+                            <p class="font-semibold text-slate-800" x-text="preview.record.predicted_label || '-'"></p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">Confidence</p>
+                            <p class="font-semibold text-slate-800" x-text="((preview.record.confidence || 0) * 100).toFixed(1) + '%'"></p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-3">
+                            <p class="text-xs text-slate-500">Severity</p>
+                            <p class="font-semibold text-slate-800" x-text="preview.record.predicted_severity || '-'"></p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">AI Reasoning</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-700" x-text="preview.record.ai_reasoning || 'Reasoning not available.'"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function aiReviewQueue() {
+        return {
+            loading: false,
+            records: [],
+            stats: {},
+            categories: [],
+            drafts: {},
+            pagination: {
+                page: {{ current_page|default:1 }},
+                page_size: {{ current_page_size|default:20 }},
+                total: 0,
+                total_pages: 0,
+                has_prev: false,
+                has_next: false,
+            },
+            filters: {
+                confidence_min: "{{ current_confidence_min }}",
+                confidence_max: "{{ current_confidence_max }}",
+                category: "{{ current_category }}",
+                status: "{{ current_status }}",
+            },
+            preview: {
+                open: false,
+                record: {},
+            },
+            init() {
+                this.records = JSON.parse(document.getElementById("ai-review-initial-queue").textContent || "[]");
+                this.stats = JSON.parse(document.getElementById("ai-review-initial-stats").textContent || "{}");
+                this.categories = JSON.parse(document.getElementById("ai-review-initial-categories").textContent || "[]");
+                this.pagination = {
+                    ...this.pagination,
+                    ...JSON.parse(document.getElementById("ai-review-initial-pagination").textContent || "{}")
+                };
+            },
+            resetFilters() {
+                this.filters = { confidence_min: "", confidence_max: "", category: "", status: "" };
+                this.pagination.page = 1;
+                this.fetchQueue();
+            },
+            buildQuery() {
+                const params = new URLSearchParams();
+                if (this.filters.confidence_min !== "") params.append("confidence_min", this.filters.confidence_min);
+                if (this.filters.confidence_max !== "") params.append("confidence_max", this.filters.confidence_max);
+                if (this.filters.category) params.append("category", this.filters.category);
+                if (this.filters.status) params.append("status", this.filters.status);
+                params.append("page", String(this.pagination.page || 1));
+                params.append("page_size", String(this.pagination.page_size || 20));
+                return params.toString();
+            },
+            async fetchQueue() {
+                this.loading = true;
+                try {
+                    const query = this.buildQuery();
+                    const endpoint = query ? `{% url 'main:ai_review_queue_api' %}?${query}` : `{% url 'main:ai_review_queue_api' %}`;
+                    const res = await fetch(endpoint, { method: "GET", headers: { "X-Requested-With": "XMLHttpRequest" } });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.err || "Failed to fetch queue");
+                    this.records = data.records || [];
+                    this.stats = data.stats || {};
+                    this.categories = data.categories || this.categories;
+                    this.pagination = {
+                        ...this.pagination,
+                        ...(data.pagination || {}),
+                    };
+                } catch (err) {
+                    alert(err.message || "Request failed");
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async goToPage(page) {
+                const target = Math.max(1, parseInt(page || 1, 10));
+                this.pagination.page = target;
+                await this.fetchQueue();
+            },
+            async nextPage() {
+                if (!this.pagination.has_next || this.loading) return;
+                await this.goToPage((this.pagination.page || 1) + 1);
+            },
+            async prevPage() {
+                if (!this.pagination.has_prev || this.loading) return;
+                await this.goToPage((this.pagination.page || 1) - 1);
+            },
+            getDraft(recordId) {
+                if (!this.drafts[recordId]) {
+                    this.drafts[recordId] = { corrected_label: "", corrected_severity: "" };
+                }
+                return this.drafts[recordId];
+            },
+            setDraft(recordId, field, value) {
+                this.getDraft(recordId)[field] = value;
+            },
+            async postJSON(url, payload) {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.err || "Request failed");
+                return data;
+            },
+            async approveRecord(record, saveToTraining = false) {
+                this.loading = true;
+                try {
+                    await this.postJSON("{% url 'main:ai_review_approve_api' %}", {
+                        record_id: record.record_id,
+                        save_to_training: !!saveToTraining,
+                    });
+                    await this.fetchQueue();
+                } catch (err) {
+                    alert(err.message || "Approval failed");
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async saveTraining(record) {
+                const draft = this.getDraft(record.record_id);
+                if (draft.corrected_label && draft.corrected_severity) {
+                    this.loading = true;
+                    try {
+                        await this.postJSON("{% url 'main:ai_review_correct_api' %}", {
+                            record_id: record.record_id,
+                            corrected_label: draft.corrected_label,
+                            corrected_severity: draft.corrected_severity,
+                            save_to_training: true,
+                        });
+                        await this.fetchQueue();
+                    } catch (err) {
+                        alert(err.message || "Correction failed");
+                    } finally {
+                        this.loading = false;
+                    }
+                    return;
+                }
+                await this.approveRecord(record, true);
+            },
+            async rejectRecord(record) {
+                const reason = prompt("Optional rejection reason:");
+                this.loading = true;
+                try {
+                    await this.postJSON("{% url 'main:ai_review_reject_api' %}", {
+                        record_id: record.record_id,
+                        reason: reason || "",
+                    });
+                    await this.fetchQueue();
+                } catch (err) {
+                    alert(err.message || "Rejection failed");
+                } finally {
+                    this.loading = false;
+                }
+            },
+            openPreview(record) {
+                this.preview.record = record || {};
+                this.preview.open = true;
+            },
+            formatDate(value) {
+                if (!value) return "-";
+                try {
+                    return new Date(value).toLocaleString();
+                } catch (e) {
+                    return value;
+                }
+            },
+            statusClass(status) {
+                if (status === "reviewed") return "bg-emerald-100 text-emerald-700";
+                if (status === "rejected") return "bg-rose-100 text-rose-700";
+                return "bg-amber-100 text-amber-700";
+            },
+        };
+    }
+</script>
+{% endblock %}
