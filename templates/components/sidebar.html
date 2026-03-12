@@ -38,9 +38,11 @@
 ></div>
 
 <aside
-    :class="sidebarCollapsed ? 'w-20' : 'w-72'"
-    class="fixed inset-y-0 left-0 z-50 flex h-full flex-col overflow-hidden border-r border-white/10 bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-white shadow-2xl transition-[width,transform] duration-300 lg:static"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+    :class="[
+        sidebarCollapsed ? 'lg:w-20' : 'lg:w-72',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+    ]"
+    class="fixed inset-y-0 left-0 z-50 flex h-full w-[min(18rem,85vw)] max-w-full flex-col overflow-hidden border-r border-white/10 bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-white shadow-2xl transition-[width,transform] duration-300 lg:static"
 >
     <div class="pointer-events-none absolute inset-0">
         <div class="absolute -top-24 -left-16 h-64 w-64 rounded-full bg-cyan-400/15 blur-3xl animate-pulse"></div>

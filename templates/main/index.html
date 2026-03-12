@@ -54,11 +54,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <!-- ================= HERO ================= -->
-<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-slate-50
-            border border-slate-200 shadow-sm p-8 md:p-12 mb-12">
+<div class="relative mb-10 overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm sm:p-8 md:mb-12 md:p-12">
 
-    <div class="absolute -top-32 -right-32 w-[420px] h-[420px] bg-indigo-500/20 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 -left-32 w-[320px] h-[320px] bg-violet-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl sm:-top-32 sm:-right-32 sm:h-[420px] sm:w-[420px]"></div>
+    <div class="absolute bottom-0 -left-20 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl sm:-left-32 sm:h-[320px] sm:w-[320px]"></div>
 
     <div class="relative z-10 space-y-4 max-w-4xl">
         <h2 class="text-lg text-slate-600">
@@ -79,7 +78,7 @@
         </span>
         {% endif %}
 
-        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">
+        <h1 class="text-3xl font-extrabold text-slate-900 sm:text-4xl md:text-5xl">
             Fixora City Intelligence System
         </h1>
 
@@ -231,20 +230,20 @@
     <div class="xl:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
 
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50">
-            <div>
+        <div class="flex flex-col gap-3 border-b border-slate-100 bg-slate-50 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div class="min-w-0">
                 <h2 class="text-lg font-bold text-slate-800">Recent Issues</h2>
                 <p class="text-xs text-slate-400">Latest civic reports across the city</p>
             </div>
             <a href="#"
-               class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
+               class="text-sm font-semibold text-indigo-600 transition hover:text-indigo-700">
                 View all →
             </a>
         </div>
 
         <!-- Table -->
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="min-w-[640px] w-full text-sm">
                 <thead>
                     <tr class="text-left text-slate-500 bg-slate-50 border-b border-slate-200">
                         <th class="px-6 py-3 font-semibold">Title</th>
@@ -257,15 +256,15 @@
                 <tbody class="divide-y">
                     {% for issue in latest_issues %}
                     <tr class="hover:bg-indigo-50/40 transition">
-                        <td class="px-6 py-4 font-semibold text-slate-800">
+                        <td class="px-4 py-4 font-semibold text-slate-800 sm:px-6">
                             {{ issue.Title }}
                         </td>
 
-                        <td class="px-6 py-4 text-slate-600">
+                        <td class="px-4 py-4 text-slate-600 sm:px-6">
                             {{ issue.Category }}
                         </td>
 
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-4 sm:px-6">
                             {% if issue.Status == 'Resolved' %}
                             <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full
                                          bg-emerald-100 text-emerald-700 text-xs font-bold">
@@ -284,7 +283,7 @@
                             {% endif %}
                         </td>
 
-                        <td class="px-6 py-4 text-slate-500">
+                        <td class="px-4 py-4 text-slate-500 sm:px-6">
                             {{ issue.IssueDate|date:"M d, Y" }}
                         </td>
                     </tr>
@@ -308,7 +307,7 @@
             <h3 class="font-bold text-slate-800 mb-1">Quick Actions</h3>
             <p class="text-xs text-slate-400 mb-5">Frequently used admin controls</p>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <a href="{% url 'main:report_issues' %}"
                    class="py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600
                           text-white text-center font-semibold shadow hover:shadow-lg

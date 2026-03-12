@@ -4,7 +4,7 @@
 {% block title %}Register Issue{% endblock title %}
 
 {% block content %}
-<div class="relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-4 sm:p-6 lg:p-8">
+<div class="relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-gradient-to-br from-cyan-50 via-white to-indigo-50 p-3 sm:p-6 lg:p-8">
     <div class="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl"></div>
     <div class="pointer-events-none absolute -bottom-20 -right-16 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl"></div>
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.8),transparent_50%),radial-gradient(circle_at_85%_85%,rgba(99,102,241,0.08),transparent_52%)]"></div>
@@ -25,11 +25,11 @@
         </div>
         {% endif %}
 
-        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-6 lg:grid-cols-3" autocomplete="off">
+        <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6" autocomplete="off">
             {% csrf_token %}
 
             <div class="space-y-6 lg:col-span-2">
-                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-6">
                     <label class="mb-2 ml-1 block text-xs font-bold uppercase tracking-wider text-slate-600">Tracking ID</label>
                     <div class="relative flex items-center">
                         <span class="material-symbols-rounded absolute left-4 {% if IssueID %}text-emerald-600{% else %}text-slate-400{% endif %}">{% if IssueID %}verified{% else %}pending{% endif %}</span>
@@ -37,9 +37,9 @@
                     </div>
                 </section>
 
-                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-6">
                     <label class="mb-4 block text-xs font-bold uppercase tracking-wider text-slate-600">Select Category <span class="text-rose-500">*</span></label>
-                    <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
                         <label class="cursor-pointer group">
                             <input type="radio" name="cat" value="road" class="peer sr-only" checked onchange="updateUI('road')">
                             <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center transition-all duration-300 group-hover:border-indigo-200 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:shadow-md">
@@ -71,7 +71,7 @@
                     </div>
                 </section>
 
-                <section class="space-y-6 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                <section class="space-y-6 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-6">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
                             <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Issue Title <span class="text-rose-500">*</span></label>
@@ -100,7 +100,7 @@
 
                     <div>
                         <label class="mb-2 ml-1 block text-sm font-bold text-slate-700">Priority Level <span class="text-rose-500">*</span></label>
-                        <div class="grid grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <label class="cursor-pointer group">
                                 <input type="radio" name="urg" value="Low" class="peer sr-only">
                                 <div class="rounded-xl border border-slate-200 bg-white px-2 py-3 text-center transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:ring-1 peer-checked:ring-emerald-500">
@@ -131,7 +131,7 @@
                     </div>
                 </section>
 
-                <section class="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                <section class="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm sm:p-6">
                     <label class="mb-4 ml-1 block text-sm font-bold text-slate-700">Evidence <span class="text-rose-500">*</span></label>
                     <div class="relative group">
                         <input type="file" name="img" required id="fileInput" class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" onchange="previewFile()">
@@ -150,7 +150,7 @@
             </div>
 
             <aside class="space-y-6 lg:col-span-1">
-                <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-cyan-900 p-6 text-white shadow-xl">
+                <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-cyan-900 p-4 text-white shadow-xl sm:p-6">
                     <div class="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-cyan-300/20 blur-3xl"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center gap-2">
@@ -162,7 +162,7 @@
                             <div id="aiConfidenceBar" class="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-400 transition-all duration-500" style="width: 18%;"></div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div class="rounded-xl border border-white/10 bg-white/10 p-3">
                                 <p class="text-[10px] uppercase tracking-wider text-indigo-200">Predicted Category</p>
                                 <p id="aiCategoryText" class="mt-1 text-sm font-bold text-white">Road</p>
