@@ -1,0 +1,24 @@
+.festival-name-holi {
+  --fx-bg-a: rgba(236, 72, 153, 0.2);
+  --fx-bg-b: rgba(56, 189, 248, 0.12);
+  --fx-nav-glow: rgba(14, 165, 233, 0.25);
+  --fx-card-border: rgba(96, 165, 250, 0.28);
+  --fx-btn-glow: rgba(236, 72, 153, 0.25);
+  --fx-particle-opacity: 0.58;
+}
+
+.festival-name-holi .festival-overlay-layer {
+  background:
+    radial-gradient(900px 500px at 12% -6%, rgba(236, 72, 153, 0.24), transparent 62%),
+    radial-gradient(760px 420px at 86% 8%, rgba(14, 165, 233, 0.24), transparent 58%),
+    radial-gradient(760px 420px at 46% 100%, rgba(234, 179, 8, 0.22), transparent 58%),
+    linear-gradient(135deg, rgba(99, 102, 241, 0.06), transparent 36%);
+}
+
+.festival-name-holi .festival-navbar {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #fff 86%, rgba(236, 72, 153, 0.16)),
+    color-mix(in srgb, #fff 90%, rgba(14, 165, 233, 0.12))
+  );
+}

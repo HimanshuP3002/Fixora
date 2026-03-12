@@ -1,0 +1,20 @@
+{
+  "target": "Category",
+  "trained_at": "2026-03-04T22:27:51.937900",
+  "samples_total": 49999,
+  "samples_used": 49999,
+  "train_size": 39999,
+  "test_size": 10000,
+  "accuracy": 1.0,
+  "f1_weighted": 1.0,
+  "class_distribution": {
+    "Sanitation": 25142,
+    "Drainage": 24857
+  },
+  "features": [
+    "Title",
+    "Description",
+    "Location",
+    "Department"
+  ]
+}

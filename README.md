@@ -2,6 +2,10 @@
 
 Fixora is a Django-based civic operations and issue management platform built for hackathons, smart governance demos, and operational dashboards. It combines a modern Tailwind-powered UI with MongoDB-backed business data, role-aware workflows, AI review tooling, reporting, notifications, and admin-driven system settings.
 
+## Live Demo
+
+https://fixora-1-e5pi.onrender.com/
+
 ## Highlights
 
 - Modern Django project structure with a custom dashboard UI

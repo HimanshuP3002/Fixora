@@ -1,0 +1,188 @@
+.festival-scene-diya {
+  --fx-bg-a: rgba(245, 158, 11, 0.26);
+  --fx-bg-b: rgba(180, 83, 9, 0.1);
+  --fx-nav-glow: rgba(245, 158, 11, 0.26);
+}
+
+.festival-scene-color {
+  --fx-bg-a: rgba(236, 72, 153, 0.21);
+  --fx-bg-b: rgba(14, 165, 233, 0.13);
+  --fx-nav-glow: rgba(168, 85, 247, 0.24);
+}
+
+.festival-scene-kite {
+  --fx-bg-a: rgba(59, 130, 246, 0.2);
+  --fx-bg-b: rgba(14, 165, 233, 0.1);
+}
+
+.festival-scene-flag {
+  --fx-bg-a: rgba(249, 115, 22, 0.16);
+  --fx-bg-b: rgba(22, 163, 74, 0.1);
+  --fx-nav-glow: rgba(37, 99, 235, 0.24);
+}
+
+.festival-scene-trident {
+  --fx-bg-a: rgba(99, 102, 241, 0.2);
+  --fx-bg-b: rgba(239, 68, 68, 0.12);
+}
+
+.festival-scene-moon {
+  --fx-bg-a: rgba(71, 85, 105, 0.24);
+  --fx-bg-b: rgba(15, 23, 42, 0.16);
+}
+
+.festival-scene-flute {
+  --fx-bg-a: rgba(37, 99, 235, 0.16);
+  --fx-bg-b: rgba(22, 163, 74, 0.1);
+}
+
+.festival-scene-lotus {
+  --fx-bg-a: rgba(249, 115, 22, 0.16);
+  --fx-bg-b: rgba(236, 72, 153, 0.12);
+}
+
+.festival-scene-arrow {
+  --fx-bg-a: rgba(234, 88, 12, 0.18);
+  --fx-bg-b: rgba(185, 28, 28, 0.1);
+}
+
+.festival-scene-flower {
+  --fx-bg-a: rgba(244, 114, 182, 0.18);
+  --fx-bg-b: rgba(234, 179, 8, 0.1);
+}
+
+.festival-scene-wheel {
+  --fx-bg-a: rgba(37, 99, 235, 0.18);
+  --fx-bg-b: rgba(192, 38, 211, 0.12);
+}
+
+.festival-scene-star {
+  --fx-bg-a: rgba(220, 38, 38, 0.15);
+  --fx-bg-b: rgba(148, 163, 184, 0.12);
+}
+
+.festival-scene-sun,
+.festival-scene-moon.festival-name-chandra-grahan {
+  --fx-bg-a: rgba(15, 23, 42, 0.32);
+  --fx-bg-b: rgba(2, 6, 23, 0.22);
+}
+
+.festival-scene-kite .festival-corner {
+  border-style: dashed;
+}
+
+.festival-scene-flag .festival-navbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  opacity: 0.85;
+  background:
+    linear-gradient(90deg, rgba(249, 115, 22, .95) 0 33%, rgba(255, 255, 255, .9) 33% 66%, rgba(22, 163, 74, .95) 66% 100%);
+}
+
+.festival-scene-kite .festival-overlay-layer::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  top: 10%;
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #ef4444, #f59e0b);
+  transform: rotate(45deg);
+  box-shadow: 0 12px 22px -14px rgba(15, 23, 42, .8);
+  animation: fxKiteFly 12s ease-in-out infinite;
+}
+
+.festival-scene-kite .festival-overlay-layer::before {
+  content: "";
+  position: absolute;
+  right: 9.8%;
+  top: 19%;
+  width: 1px;
+  height: 82px;
+  background: rgba(51, 65, 85, .56);
+  transform-origin: top;
+  animation: fxKiteTail 2.4s ease-in-out infinite;
+}
+
+.festival-scene-moon .festival-overlay-layer::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  top: 6%;
+  width: 70px;
+  height: 70px;
+  border-radius: 999px;
+  background: #f8fafc;
+  box-shadow: inset -16px 0 0 #334155, 0 0 26px rgba(241, 245, 249, .35);
+}
+
+.festival-scene-trident .festival-overlay-layer::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  top: 8%;
+  width: 18px;
+  height: 98px;
+  border-left: 3px solid color-mix(in srgb, var(--festival-accent) 72%, #7c3aed);
+  filter: drop-shadow(0 0 10px rgba(124, 58, 237, .45));
+}
+
+.festival-scene-trident .festival-overlay-layer::before {
+  content: "";
+  position: absolute;
+  left: 2.8%;
+  top: 6.5%;
+  width: 24px;
+  height: 16px;
+  border: 3px solid color-mix(in srgb, var(--festival-accent) 70%, #7c3aed);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+}
+
+.festival-scene-arrow .festival-overlay-layer::after {
+  content: "";
+  position: absolute;
+  right: -16%;
+  top: 18%;
+  width: 36%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--festival-accent) 78%, #f59e0b));
+  transform: rotate(-12deg);
+  animation: fxArrowStreak 3.6s ease-out infinite;
+}
+
+.festival-scene-wheel .festival-corner {
+  border-radius: 999px;
+  animation-name: fxWheelSpin;
+}
+
+.festival-scene-star .festival-particles-layer {
+  backdrop-filter: saturate(1.04);
+}
+
+@keyframes fxKiteFly {
+  0% { transform: translate3d(0, 0, 0) rotate(45deg); }
+  50% { transform: translate3d(-240px, 45px, 0) rotate(36deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(45deg); }
+}
+
+@keyframes fxKiteTail {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes fxArrowStreak {
+  0% { transform: translateX(0) rotate(-12deg); opacity: 0; }
+  20% { opacity: .9; }
+  100% { transform: translateX(-100%) rotate(-12deg); opacity: 0; }
+}
+
+@keyframes fxWheelSpin {
+  0% { transform: rotate(0deg); opacity: .24; }
+  100% { transform: rotate(360deg); opacity: .34; }
+}

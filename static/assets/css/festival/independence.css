@@ -1,0 +1,28 @@
+.festival-name-independence-day {
+  --fx-bg-a: rgba(249, 115, 22, 0.16);
+  --fx-bg-b: rgba(22, 163, 74, 0.1);
+  --fx-nav-glow: rgba(37, 99, 235, 0.22);
+  --fx-card-border: rgba(22, 163, 74, 0.2);
+  --fx-btn-glow: rgba(249, 115, 22, 0.22);
+  --fx-particle-opacity: 0.52;
+}
+
+.festival-name-independence-day .festival-overlay-layer {
+  background:
+    radial-gradient(960px 480px at 10% -8%, rgba(249, 115, 22, 0.2), transparent 62%),
+    radial-gradient(800px 460px at 88% 12%, rgba(22, 163, 74, 0.2), transparent 60%),
+    linear-gradient(
+      180deg,
+      rgba(249, 115, 22, 0.08) 0 33%,
+      rgba(255, 255, 255, 0.06) 33% 66%,
+      rgba(22, 163, 74, 0.08) 66% 100%
+    );
+}
+
+.festival-name-independence-day .festival-navbar {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, #fff 90%, rgba(249, 115, 22, 0.15)),
+    color-mix(in srgb, #fff 92%, rgba(22, 163, 74, 0.15))
+  );
+}

@@ -1,0 +1,23 @@
+.festival-name-diwali {
+  --fx-bg-a: rgba(245, 158, 11, 0.26);
+  --fx-bg-b: rgba(180, 83, 9, 0.08);
+  --fx-nav-glow: rgba(245, 158, 11, 0.25);
+  --fx-card-border: rgba(251, 191, 36, 0.28);
+  --fx-btn-glow: rgba(245, 158, 11, 0.28);
+  --fx-particle-opacity: 0.62;
+}
+
+.festival-name-diwali .festival-overlay-layer {
+  background:
+    radial-gradient(1000px 540px at 10% -4%, rgba(245, 158, 11, 0.3), transparent 62%),
+    radial-gradient(900px 460px at 88% 10%, rgba(251, 191, 36, 0.22), transparent 58%),
+    linear-gradient(125deg, rgba(251, 191, 36, 0.1), transparent 35%);
+}
+
+.festival-name-diwali .festival-navbar {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #fff 76%, rgba(245, 158, 11, 0.16)),
+    color-mix(in srgb, #fff 92%, rgba(251, 191, 36, 0.06))
+  );
+}
