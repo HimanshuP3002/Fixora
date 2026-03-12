@@ -119,7 +119,7 @@ Views and notification flows are designed around role-based access checks and se
 ### 1. Clone the repository
 
 ```bash
-git clone (https://github.com/HimanshuP3002/Fixora.git)
+git clone https://github.com/HimanshuP3002/Fixora.git
 cd Fixora
 ```
 
