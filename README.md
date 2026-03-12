@@ -119,7 +119,7 @@ Views and notification flows are designed around role-based access checks and se
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone (https://github.com/HimanshuP3002/Fixora.git)
 cd Fixora
 ```
 
@@ -129,7 +129,10 @@ Windows PowerShell:
 
 ```powershell
 python -m venv .env
-.env\Scripts\Activate.ps1
+.env\Scripts\activate
+
+# Linux
+#source venv/bin/activate
 ```
 
 ### 3. Install dependencies
