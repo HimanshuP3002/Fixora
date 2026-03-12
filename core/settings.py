@@ -12,16 +12,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
-from urllib.parse import quote_plus
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MONGO_DB_USER = os.environ.get('MONGO_DB_USER', 'hpandey3011')
-MONGO_DB_PASSWORD = os.environ.get('MONGO_DB_PASSWORD', 'Himanshu30')
-MONGO_CLUSTER = os.environ.get('MONGO_CLUSTER', 'cluster0.va3thzm.mongodb.net')
 MONGO_URI = os.environ.get(
     'MONGO_URI',
-    f"mongodb+srv://{MONGO_DB_USER}:{quote_plus(MONGO_DB_PASSWORD)}@{MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=Cluster0",
+    "mongodb+srv://hpandey3011:Himanshu30@cluster0.va3thzm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
 )
 
 
@@ -34,9 +30,14 @@ SECRET_KEY = 'django-insecure-05hsfp9*utnabnw#b&a+@+5s(r)k0l0e2u3!i*&6#nx*(x1c^d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ALLOWED_HOSTS = ['localhost','127.0.0.1', '.vercel.app','.onrender.com']
+
+# https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
-
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME: 
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,6 +66,7 @@ NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
@@ -73,6 +75,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -165,6 +168,14 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'static' / 'staticfiles'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
