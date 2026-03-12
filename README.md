@@ -145,31 +145,9 @@ python -m venv .env
 pip install -r requirements.txt
 ```
 
-### 4. Configure MongoDB connection
 
-Fixora reads Mongo configuration from `core/settings.py` and environment variables.
 
-Recommended environment variables:
-
-```powershell
-$env:MONGO_DB_USER="your_username"
-$env:MONGO_DB_PASSWORD="your_password"
-$env:MONGO_CLUSTER="cluster0.va3thzm.mongodb.net"
-```
-
-Or provide a full URI:
-
-```powershell
-$env:MONGO_URI="mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-```
-
-### 5. Run migrations
-
-```bash
-python manage.py migrate
-```
-
-### 6. Start the development server
+### 4. Start the development server
 
 ```bash
 python manage.py runserver
