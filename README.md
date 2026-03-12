@@ -4,7 +4,7 @@ Fixora is a Django-based civic operations and issue management platform built fo
 
 ## Live Demo
 
-https://fixora-1-e5pi.onrender.com/
+[https://fixora-61qg.onrender.com]
 
 ## Highlights
 
